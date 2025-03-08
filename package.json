@@ -13,5 +13,8 @@
         "postcss": "^8.5.3",
         "tailwindcss": "^4.0.12",
         "vite": "^5.0.0"
+    },
+    "dependencies": {
+        "sweetalert2": "^11.17.2"
     }
 }
