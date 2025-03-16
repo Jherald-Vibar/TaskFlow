@@ -33,7 +33,11 @@ class AuthController extends Controller
             'password'=> bcrypt($request->password),
         ]);
 
+<<<<<<< HEAD
         return redirect()->route('homepage')->with('success', "Registration Success!");
+=======
+        return redirect()->route('loginForm')->with('success', "Registration Success!");
+>>>>>>> 70e5976 (Added Login)
     }
 
     public function redirect() {
@@ -66,7 +70,11 @@ class AuthController extends Controller
 
             Auth::login($user);
 
+<<<<<<< HEAD
             return redirect()->route('loginForm');
+=======
+            return redirect()->route('user-dashboard');
+>>>>>>> 70e5976 (Added Login)
 
         } catch (\Throwable $e) {
             return redirect()->route('registrationForm')->with('error', 'Something went wrong! ' . $e->getMessage());
@@ -77,4 +85,28 @@ class AuthController extends Controller
         return view('Auth.login');
     }
 
+<<<<<<< HEAD
+=======
+    public function authenticate(Request $request) {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
+        if (Auth::attempt($validated)) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+            return redirect()->route('user-dashboard');
+        }
+        return redirect()->back()->withErrors($validated)->withInput();
+    }
+
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('loginForm')->with('success', 'Logout Success!');
+    }
+
+>>>>>>> 70e5976 (Added Login)
 }
