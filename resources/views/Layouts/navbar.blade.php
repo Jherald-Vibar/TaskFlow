@@ -16,7 +16,11 @@
                 <li><a href="{{route('homepage')}}" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Home</a></li>
                 <li><a href="#" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">About</a></li>
                 <li><a href="#" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Contact</a></li>
+<<<<<<< HEAD
                 <li><a href="" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Sign In</a></li>
+=======
+                <li><a href="{{route('loginForm')}}" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Sign In</a></li>
+>>>>>>> 70e5976 (Added Login)
                 </li>
             </ul>
         </div>
