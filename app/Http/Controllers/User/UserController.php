@@ -16,7 +16,5 @@ class UserController extends Controller
         return view('Users.dashboard');
     }
 
-    public function test() {
-        return view('Auth.try');
-    }
+
 }
