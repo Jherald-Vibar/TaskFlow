@@ -34,3 +34,4 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 //User
 Route::get('dashboard', [UserController::class, 'dashboard'])->name('user-dashboard');
+Route::get('try', [UserController::class, 'test']);

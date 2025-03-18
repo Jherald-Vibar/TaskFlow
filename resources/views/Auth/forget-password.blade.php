@@ -23,7 +23,7 @@
                 <h2 class="text-2xl font-semibold text-gray-700 text-center">Forgot Password</h2>
                 <p class="text-sm text-gray-600 text-center mt-2">Enter your email to receive a reset link</p>
 
-                <form method="POST" action="">
+                <form method="POST" action="{{route('resetPass')}}">
                     @csrf
                     <div class="mt-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email Address</label>
