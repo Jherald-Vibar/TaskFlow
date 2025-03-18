@@ -17,7 +17,6 @@
 <div class="py-16">
     <div class="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
         <div class="w-full p-8 lg:w-1/2">
-            <!-- Google Sign-in Button (you can keep it or remove it if you're not using it) -->
             <a href="{{route('google-auth')}}" class="flex items-center justify-center mt-4 text-white rounded-lg shadow-md hover:bg-gray-100">
                 <div class="px-4 py-3">
                     <svg class="h-6 w-6" viewBox="0 0 40 40">
@@ -37,8 +36,6 @@
                 </div>
                 <h1 class="px-4 py-3 w-5/6 text-center text-gray-600 font-bold">Sign up with Google</h1>
             </a>
-
-            <!-- Registered Form -->
             <form method="POST" action="{{route('store')}}">
                 @csrf
                 <div class="mt-4">
@@ -65,7 +62,7 @@
 
             <div class="mt-4 flex items-center justify-between">
                 <span class="border-b w-1/5 md:w-1/4"></span>
-                <a href="" class="text-xs text-gray-500 uppercase">Sign In</a>
+                <a href="{{route('loginForm')}}" class="text-xs text-gray-500 uppercase">Sign In</a>
                 <span class="border-b w-1/5 md:w-1/4"></span>
             </div>
         </div>
@@ -74,5 +71,26 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        @if(session('success'))
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        @if ($errors->any())
+            Swal.fire({
+                title: "Validation Error!",
+                text: `{!! implode('<br>', $errors->all()) !!}`,
+                icon: "error"
+            });
+        @endif
+    });
+</script>
 </body>
 </html>

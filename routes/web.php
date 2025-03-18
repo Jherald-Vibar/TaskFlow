@@ -27,7 +27,10 @@ Route::get('/auth/google/callback', [AuthController::class,'googleAuth'])->name(
 Route::get('login', [AuthController::class, 'login'])->name('loginForm');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgotpassForm');
+Route::post('/forgot-password', [AuthController::class, 'forgotPasswordPost'])->name('resetPass');
+Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('resetPassword');
 
 //User
 Route::get('dashboard', [UserController::class, 'dashboard'])->name('user-dashboard');

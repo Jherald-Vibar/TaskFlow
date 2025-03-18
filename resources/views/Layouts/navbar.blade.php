@@ -24,7 +24,7 @@
 </nav>
 
 <script>
-    // JavaScript to toggle the mobile menu
+
     const toggleButton = document.getElementById('navbar-toggle');
     const navbarMenu = document.getElementById('navbar-default');
 
