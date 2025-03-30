@@ -1,17 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    User Dashboard
+@extends('Layouts.app')
+@section('content')
 
-    <form action="{{route('logout')}}" method="POST">
-        @csrf
-        <button type="submit" class="btn btn-danger">Logout</button>
-    </form>
-</body>
-</html>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        @if(session('status'))
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('status') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        @if ($errors->any())
+            Swal.fire({
+                title: "Validation Error!",
+                text: `{!! implode('<br>', $errors->all()) !!}`,
+                icon: "error"
+            });
+        @endif
+    });
+</script>
+@endsection

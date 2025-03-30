@@ -19,11 +19,15 @@
             <!-- Profile -->
             <div class="flex items-center space-x-3 mb-5">
                 @auth
+                @if(empty($account->image))
                 <img src="{{Auth::user()->image ?? asset('images/profile.png') }}" alt="Profile" class="w-10 h-10 rounded-full">
+                @else
+                <img src="{{ asset('profile-pic/'.$account->image) }}" alt="Profile" class="w-10 h-10 rounded-full">
+                @endif
                 <div>
                 @endauth
                     @auth
-                    <h2 class="font-bold">{{Auth::user()->name}}</h2>
+                    <h2 class="font-bold">{{$account->username}}</h2>
                     <p class="text-xs opacity-75">{{Auth::user()->email}}</p>
                     @endauth
                 </div>
@@ -31,7 +35,7 @@
 
             <!-- Navigation Links -->
             <nav class="flex-1 space-y-4">
-                <a href="#" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
+                <a href="{{route('user-dashboard')}}" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
                 <a href="#" class="block p-3">✅ My Tasks</a>
                 <a href="#" class="block p-3">📌 Task Categories</a>
                 <a href="#" class="block p-3">⚙️ Settings</a>

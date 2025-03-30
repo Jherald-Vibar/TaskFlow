@@ -13,10 +13,12 @@
         </button>
         <div class="hidden w-full md:block md:w-auto" id="navbar-default">
             <ul class="font-medium flex flex-col justify-center items-center p-4 md:p-0 mt-4 border border-red-800 rounded-lg bg-red-800 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
+                @auth
+                <li><a href="{{route('user-dashboard')}}" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Dashboard</a></li>
+                @else
                 <li><a href="{{route('homepage')}}" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Home</a></li>
-                <li><a href="#" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">About</a></li>
-                <li><a href="#" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Contact</a></li>
                 <li><a href="{{route('loginForm')}}" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Sign In</a></li>
+                @endauth
                 </li>
             </ul>
         </div>
