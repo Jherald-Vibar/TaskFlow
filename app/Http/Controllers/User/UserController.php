@@ -106,6 +106,27 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Account updated successfully.');
     }
 
+    public function updatePassword(Request $request, $id) {
+        $user = User::findorFail($id);
 
+        $validator = Validator::make($request->all(), [
+            'password' => ['required'],
+            'new_password' => ['required', 'min:8', 'confirmed'],
+        ]);
 
+        if($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect']);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return redirect()->back()->with('success', 'Password updated successfully.');
+
+    }
 }

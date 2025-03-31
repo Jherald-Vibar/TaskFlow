@@ -49,6 +49,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
     Route::get('account/settings', [UserController::class, 'viewAccount'])->name('accountSettings');
     Route::put('account/settings/update/{id}', [UserController::class, 'updateAccount'])->name('updateAccount');
+    Route::put('account/settings/update-pass/{id}', [UserController::class, 'updatePassword'])->name('updatePassword');
 });
 
 

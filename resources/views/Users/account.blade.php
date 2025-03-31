@@ -119,23 +119,23 @@
                 <div class="bg-white p-6 rounded-lg shadow-lg w-96">
                     <h2 class="text-xl font-bold mb-4">Edit Account Details</h2>
 
-                    <form id="editAccountForm" action="" method="POST" enctype="multipart/form-data">
+                    <form id="editAccountForm" action="{{route('updatePassword', ['id' => $user->id])}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Current Password</label>
-                            <input type="text" id="editPassword" name="password"  class="w-full px-3 py-2 border rounded-lg">
+                            <input type="password" id="editPassword" name="password"  class="w-full px-3 py-2 border rounded-lg">
                         </div>
 
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">New Password</label>
-                            <input type="text" id="editPassword" name="password"  class="w-full px-3 py-2 border rounded-lg">
+                            <input type="password" id="editPassword" name="new_password"  class="w-full px-3 py-2 border rounded-lg">
                         </div>
 
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                            <input type="text" id="editPassword" name="confirm_password"  class="w-full px-3 py-2 border rounded-lg">
+                            <input type="password" id="editPassword" name="new_password_confirmation"  class="w-full px-3 py-2 border rounded-lg">
                         </div>
                         <div class="flex justify-end space-x-2">
                             <button type="button" class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600" onclick="closeEditPassModal()">
@@ -154,7 +154,7 @@
 </section>
 
 @endsection
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -200,5 +200,26 @@ document.addEventListener("DOMContentLoaded", function () {
     function openPasswordModal() {
         document.getElementById('editPasswordModal').classList.remove("hidden");
     }
+
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            @if(session('status'))
+                Swal.fire({
+                    title: 'Success!',
+                    text: "{{ session('status') }}",
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            @endif
+
+            @if ($errors->any())
+                Swal.fire({
+                    title: "Validation Error!",
+                    text: `{!! implode('<br>', $errors->all()) !!}`,
+                    icon: "error"
+                });
+            @endif
+        });
 
 </script>
