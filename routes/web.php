@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
     Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
     Route::get('account/settings', [UserController::class, 'viewAccount'])->name('accountSettings');
+    Route::put('account/settings/update/{id}', [UserController::class, 'updateAccount'])->name('updateAccount');
 });
 
 

@@ -8,6 +8,7 @@ use App\Models\TaskModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -67,5 +68,44 @@ class UserController extends Controller
         $tasks = TaskModel::where('user_id', $user->id)->get();
         return view('Users.account', compact('account', 'user' ,'tasks', 'title'));
     }
+
+    public function updateAccount(Request $request, $id) {
+        $user = User::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validated = $validator->validated();
+        $account = Account::where('user_id', $user->id)->first();
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('profile-pic'), $fileName);
+            $validated['image'] = $fileName;
+        }
+
+        $account->update([
+            'username' => $request->username,
+            'image' => $validated['image'] ?? $account->image,
+        ]);
+
+
+        if (!empty($request->password)) {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Account updated successfully.');
+    }
+
+
 
 }

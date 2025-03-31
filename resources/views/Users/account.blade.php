@@ -47,15 +47,26 @@
                 </dl>
             </div>
 
-            <div class="flex items-center justify-center">
-                <button type="button" data-modal-target="accountInformationModal2" data-modal-toggle="accountInformationModal2"
-                    class="inline-flex items-center justify-center rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-red-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            <div class="flex items-center justify-center space-x-4">
+                <button type="button" onclick="openEditModal()"
+                    class="inline-flex items-center justify-center rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800">
                     <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"></path>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"></path>
                     </svg>
                     Edit Your Data
                 </button>
+
+                <button type="button" onclick="openPasswordModal()"
+                    class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">
+                    <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v1m-6-4V9a6 6 0 1 1 12 0v3m-6 6h.01M4 12h16"></path>
+                    </svg>
+                    Change Password
+                </button>
             </div>
+
 
             <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden justify-center items-center z-50">
                 <div class="bg-transparent p-4 rounded-lg shadow-lg flex justify-center items-center w-full h-full">
@@ -67,6 +78,74 @@
                         </button>
                         <img id="modalImage" class="max-w-full max-h-screen rounded" src="" alt="Profile Image">
                     </div>
+                </div>
+            </div>
+
+            <div id="editAccountModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                    <h2 class="text-xl font-bold mb-4">Edit Account Details</h2>
+
+                    <form id="editAccountForm" action="{{route('updateAccount', ['id' => $user->id])}}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <!-- Profile Image Preview -->
+                        <div class="mb-4 text-center">
+                            <label class="block text-sm font-medium text-gray-700">Profile Image</label>
+                            <div class="flex flex-col items-center">
+                                <img id="imagePreview" class="h-20 w-20 rounded-full border"
+                                     src="{{ asset('profile-pic/' . $account->image) }}"
+                                     alt="Profile Image">
+                                <input type="file" id="profileImage" name="image" class="mt-2 text-sm">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Username</label>
+                            <input type="text" id="editUserName" name="username" value="{{$account->username}}" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button type="button" class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600" onclick="closeEditModal()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="editPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                    <h2 class="text-xl font-bold mb-4">Edit Account Details</h2>
+
+                    <form id="editAccountForm" action="" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Current Password</label>
+                            <input type="text" id="editPassword" name="password"  class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">New Password</label>
+                            <input type="text" id="editPassword" name="password"  class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <input type="text" id="editPassword" name="confirm_password"  class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button type="button" class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600" onclick="closeEditPassModal()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -89,4 +168,37 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("imageModal").classList.add("hidden");
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+        const profileImageInput = document.getElementById("profileImage");
+        const imagePreview = document.getElementById("imagePreview");
+
+        profileImageInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    function closeEditModal() {
+        document.getElementById("editAccountModal").classList.add("hidden");
+    }
+
+    function openEditModal() {
+        document.getElementById('editAccountModal').classList.remove("hidden");
+    }
+
+    function closeEditPassModal() {
+        document.getElementById('editPasswordModal').classList.add("hidden");
+    }
+
+    function openPasswordModal() {
+        document.getElementById('editPasswordModal').classList.remove("hidden");
+    }
+
 </script>
