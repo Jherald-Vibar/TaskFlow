@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="icon" href="{{asset('images/logo.png')}}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -19,11 +20,15 @@
             <!-- Profile -->
             <div class="flex items-center space-x-3 mb-5">
                 @auth
+                @if(empty($account->image))
                 <img src="{{Auth::user()->image ?? asset('images/profile.png') }}" alt="Profile" class="w-10 h-10 rounded-full">
+                @else
+                <img src="{{ asset('profile-pic/'.$account->image) }}" alt="Profile" class="w-10 h-10 rounded-full">
+                @endif
                 <div>
                 @endauth
                     @auth
-                    <h2 class="font-bold">{{Auth::user()->name}}</h2>
+                    <h2 class="font-bold">{{$account->username}}</h2>
                     <p class="text-xs opacity-75">{{Auth::user()->email}}</p>
                     @endauth
                 </div>
@@ -31,7 +36,8 @@
 
             <!-- Navigation Links -->
             <nav class="flex-1 space-y-4">
-                <a href="#" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
+                <a href="" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
+                <a href="#" class="block p-3">📅 Today</a>
                 <a href="#" class="block p-3">✅ My Tasks</a>
                 <a href="#" class="block p-3">📌 Task Categories</a>
                 <a href="#" class="block p-3">⚙️ Settings</a>
@@ -46,7 +52,7 @@
 
             <!-- Navbar -->
             <header class="bg-white p-4 shadow-md flex justify-between items-center">
-                <h1 class="text-xl font-bold">Dashboard</h1>
+                <h1 class="text-xl font-bold">Today Task</h1>
                 <div class="flex items-center space-x-3">
                     <input type="text" placeholder="Search tasks..." class="border p-2 rounded-lg">
                     <button class="bg-red-500 text-white px-4 py-2 rounded-lg">🔍</button>
@@ -69,13 +75,11 @@
         function displayCurrentDate() {
             const today = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = today.toLocaleDateString('en-US', options); // Example: "February 10, 2025"
-
-            // Inject the formatted date into the element with id 'current-date'
+            const formattedDate = today.toLocaleDateString('en-US', options);
             document.getElementById('current-date').textContent = formattedDate;
         }
 
-        // Call the function to display the date when the page loads
+
         displayCurrentDate();
     </script>
 
