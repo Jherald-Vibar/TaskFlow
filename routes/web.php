@@ -35,13 +35,19 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 //User
 Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
+    //Home-Today
     Route::get('today/', [UserController::class, 'todayPage'])->name('user-today');
-    Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
-    Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
+
+    //Task Management
     Route::post('today', [TaskController::class, 'taskStore'])->name('task.store');
     Route::put('today/{id}', [TaskController::class, 'updateTask'])->name('updateTask');
     Route::delete('task/{id}', [TaskController::class, 'deleteTask'])->name('deleteTask');
     Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
+
+    //Account Management
+    Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
+    Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
+    Route::get('account/settings', [UserController::class, 'viewAccount'])->name('accountSettings');
 });
 
 

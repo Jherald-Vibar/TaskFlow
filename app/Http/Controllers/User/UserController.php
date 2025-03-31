@@ -13,13 +13,14 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     public function todayPage() {
+       $title = "Today Task";
        $user = Auth::user();
        $account = Account::where('user_id', $user->id)->first();
        $tasks = TaskModel::where('user_id', $user->id)->get();
        if(!$account) {
          return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
        }
-       return view('Users.today', compact('account', 'tasks', 'user'));
+       return view('Users.today', compact('account', 'tasks', 'user' , 'title'));
     }
 
     public function createForm($id) {
@@ -57,6 +58,14 @@ class UserController extends Controller
             'user_id' => $user->id,
         ]);
         return redirect()->route('user-today')->with('success', 'Successfully Created an Account');
+    }
+
+    public function viewAccount() {
+        $title = "Account";
+        $user = Auth::user();
+        $account = Account::where('user_id', $user->id)->first();
+        $tasks = TaskModel::where('user_id', $user->id)->get();
+        return view('Users.account', compact('account', 'user' ,'tasks', 'title'));
     }
 
 }

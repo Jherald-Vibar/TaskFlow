@@ -17,7 +17,6 @@
 
         <!-- Sidebar -->
         <aside class="w-64 bg-red-600 text-white p-5 flex flex-col">
-            <!-- Profile -->
             <div class="flex items-center space-x-3 mb-5">
                 @auth
                 @if(empty($account->image))
@@ -36,11 +35,19 @@
 
             <!-- Navigation Links -->
             <nav class="flex-1 space-y-4">
-                <a href="" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
-                <a href="#" class="block p-3">📅 Today</a>
+                <a href="#" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
+                <a href="{{route('user-today')}}" class="block p-3">📅 Today</a>
                 <a href="#" class="block p-3">✅ My Tasks</a>
                 <a href="#" class="block p-3">📌 Task Categories</a>
-                <a href="#" class="block p-3">⚙️ Settings</a>
+
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="block p-3 w-full text-left">⚙️ Settings ▼</button>
+                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
+                        <a href="{{route('accountSettings')}}" class="block px-4 text-black py-2 hover:bg-gray-100">👤 Account Settings</a>
+                        <a href="#" class="block px-4 text-black py-2 hover:bg-gray-100">⚙️ General Settings</a>
+                    </div>
+                </div>
+
                 <a href="#" class="block p-3">❓ Help</a>
             </nav>
 
@@ -52,7 +59,7 @@
 
             <!-- Navbar -->
             <header class="bg-white p-4 shadow-md flex justify-between items-center">
-                <h1 class="text-xl font-bold">Today Task</h1>
+                <h1 class="text-xl font-bold">{{$title}}</h1>
                 <div class="flex items-center space-x-3">
                     <form action="{{ route('searchTask') }}" method="GET" class="mb-4">
                         <input type="text" name="query" value="{{ request('query') }}"
@@ -86,6 +93,6 @@
 
         displayCurrentDate();
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
 </html>

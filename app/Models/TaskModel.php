@@ -22,4 +22,6 @@ class TaskModel extends Model
     {
         return $this->belongsTo(TaskCategoryModel::class, 'category_id');
     }
+
+    
 }
