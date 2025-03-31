@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\TaskModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,14 +12,14 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function dashboard() {
+    public function todayPage() {
        $user = Auth::user();
        $account = Account::where('user_id', $user->id)->first();
-
+       $tasks = TaskModel::where('user_id', $user->id)->get();
        if(!$account) {
          return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
        }
-       return view('Users.dashboard', compact('account'));
+       return view('Users.today', compact('account', 'tasks', 'user'));
     }
 
     public function createForm($id) {
@@ -52,10 +53,10 @@ class UserController extends Controller
 
         Account::create([
             'username' => $request->username,
-            'image' => $validated['image'],
+            'image' => $validated['image'] ?? null,
             'user_id' => $user->id,
         ]);
-        return redirect()->route('user-dashboard')->with('success', 'Successfully Created an Account');
+        return redirect()->route('user-today')->with('success', 'Successfully Created an Account');
     }
 
 }

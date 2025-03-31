@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,11 +33,18 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPasswordPost'])->
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('resetPassword');
 
-
 //User
 Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
-    Route::get('dashboard', [UserController::class, 'dashboard'])->name('user-dashboard');
+    Route::get('today/', [UserController::class, 'todayPage'])->name('user-today');
     Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
     Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
+    Route::post('today', [TaskController::class, 'taskStore'])->name('task.store');
+    Route::put('today/{id}', [TaskController::class, 'updateTask'])->name('updateTask');
+    Route::delete('task/{id}', [TaskController::class, 'deleteTask'])->name('deleteTask');
+    Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
 });
+
+
+
+
 
