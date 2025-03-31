@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Account;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -70,8 +71,11 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
-
-            return redirect()->route('user-dashboard');
+            $accountExist = Account::where('user_id', $user->id)->first();
+            if($accountExist) {
+                return redirect()->route('user-today');
+            }
+            return redirect()->route('createForm', ['id' => $user->id]);
 
         } catch (\Throwable $e) {
             return redirect()->route('registrationForm')->with('error', 'Something went wrong! ' . $e->getMessage());
@@ -97,9 +101,13 @@ class AuthController extends Controller
         if (!Auth::attempt($validated)) {
             return redirect()->back()->withErrors(['password' => 'Invalid credentials.'])->withInput();
         }
-        Auth::login($user);
         $request->session()->regenerate();
-        return redirect()->route('user-dashboard');
+        $user = Auth::user();
+        $accountExist = Account::where('user_id', $user->id)->first();
+        if($accountExist) {
+            return redirect()->route('user-today');
+        }
+        return redirect()->route('createForm', ['id' => $user->id]);
     }
 
     public function logout(Request $request) {
