@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,12 +27,18 @@ Route::get('auth/google', [AuthController::class, 'redirect'])->name('google-aut
 Route::get('/auth/google/callback', [AuthController::class,'googleAuth'])->name('googleAuthenticated');
 Route::get('login', [AuthController::class, 'login'])->name('loginForm');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgotpassForm');
 Route::post('/forgot-password', [AuthController::class, 'forgotPasswordPost'])->name('resetPass');
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('resetPassword');
 
+
 //User
-Route::get('dashboard', [UserController::class, 'dashboard'])->name('user-dashboard');
+Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
+    Route::get('today', [UserController::class, 'todayPage'])->name('user-today');
+    Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
+    Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
+    Route::post('today', [TaskController::class, 'taskStore'])->name('task.store');
+});
 
