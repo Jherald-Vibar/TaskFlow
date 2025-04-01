@@ -76,6 +76,7 @@ class TaskController extends Controller
 
 
     public function searchTask(Request $request) {
+        $title = "Today Task";
         $user = Auth::user();
         $query = $request->input('query');
         $account = Account::where('user_id', $user->id)->first();
@@ -84,6 +85,6 @@ class TaskController extends Controller
         ->get();
 
 
-        return view('users.today', compact('tasks', 'account'));
+        return view('users.today', compact('tasks', 'account', 'title'));
     }
 }

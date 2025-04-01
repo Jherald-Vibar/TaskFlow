@@ -201,25 +201,23 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('editPasswordModal').classList.remove("hidden");
     }
 
+    document.addEventListener("DOMContentLoaded", function() {
+        @if(session('success'))
+            Swal.fire({
+                title: 'Success!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        @endif
 
-
-        document.addEventListener("DOMContentLoaded", function() {
-            @if(session('status'))
-                Swal.fire({
-                    title: 'Success!',
-                    text: "{{ session('status') }}",
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            @endif
-
-            @if ($errors->any())
-                Swal.fire({
-                    title: "Validation Error!",
-                    text: `{!! implode('<br>', $errors->all()) !!}`,
-                    icon: "error"
-                });
-            @endif
-        });
+        @if ($errors->any())
+            Swal.fire({
+                title: "Validation Error!",
+                text: `{!! implode('<br>', $errors->all()) !!}`,
+                icon: "error"
+            });
+        @endif
+    });
 
 </script>
