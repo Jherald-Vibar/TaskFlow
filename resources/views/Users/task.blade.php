@@ -68,11 +68,13 @@
                         <input type="date" name="due_date" id="dueDate" class="border rounded px-3 py-2 bg-gray-100 w-full" required>
                     </div>
                     <div class="relative">
-                        <label for="categoryBtn" class="text-sm font-bold">Task Category (Optional)</label>
-                        <button type="button" id="categoryBtn" onclick="openCategoryModal()" class="border rounded px-3 py-2 bg-gray-100 w-full text-left">
-                            <span id="selectedCategory">Select Category</span>
-                        </button>
-                        <input type="hidden" name="category_id" id="categoryInput">
+                        <label for="taskCategory" class="text-sm font-bold">Category:</label>
+                        <select id="prioritySelect" name="category_id" class="border rounded px-3 py-2 bg-gray-100 w-full">
+                            <option value="" disabled selected>Select Category</option>
+                            @foreach ($categories as $category)
+                            <option value="{{$category->id}}">{{$category->category_name}}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="mb-2">
@@ -98,29 +100,6 @@
             </div>
         </div>
     </div>
-    <div id="categoryModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-4 rounded-lg shadow-lg w-1/3">
-            <h2 class="text-lg font-bold mb-2">Manage Task Categories</h2>
-            <form id="categoryForm" onsubmit="saveCategory(event)">
-                @csrf
-                <div class="mb-3">
-                    <label class="text-sm font-bold">New Category:</label>
-                    <input type="text" id="newCategoryInput" name="categoryName" class="w-full border rounded px-3 py-2" placeholder="Enter New Category" required>
-                </div>
-                <div class="flex justify-end gap-2 mt-3">
-                    <button type="button" onclick="closeCategoryModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Save</button>
-                </div>
-            </form>
-            <div class="mt-5">
-                <label class="text-sm font-bold">Select Category:</label>
-                <select id="categorySelect" class="border rounded px-3 py-2 bg-gray-100 w-full" onchange="selectCategory()">
-                    <option value="" disabled selected>Select Category</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
     <div id="editTaskModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 class="text-xl font-bold mb-4">Edit Task</h2>
@@ -228,6 +207,7 @@
             }
         });
     }
+
 
 </script>
 @endsection

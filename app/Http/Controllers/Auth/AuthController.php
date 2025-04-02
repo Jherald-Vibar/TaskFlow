@@ -73,7 +73,7 @@ class AuthController extends Controller
             Auth::login($user);
             $accountExist = Account::where('user_id', $user->id)->first();
             if($accountExist) {
-                return redirect()->route('user-today');
+                return redirect()->route('user-task');
             }
             return redirect()->route('createForm', ['id' => $user->id]);
 
@@ -105,7 +105,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $accountExist = Account::where('user_id', $user->id)->first();
         if($accountExist) {
-            return redirect()->route('user-today');
+            return redirect()->route('user-task');
         }
         return redirect()->route('createForm', ['id' => $user->id]);
     }

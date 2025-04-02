@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,11 +81,36 @@ class TaskController extends Controller
         $user = Auth::user();
         $query = $request->input('query');
         $account = Account::where('user_id', $user->id)->first();
+        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $tasks = TaskModel::where('task_name', 'LIKE', "%$query%")
         ->where('user_id', $user->id)
         ->get();
 
 
-        return view('users.task', compact('tasks', 'account', 'title'));
+        return view('users.task', compact('tasks', 'account', 'title', 'categories'));
     }
+
+    public function categoryView() {
+        $title = "Task Category";
+        $user = Auth::user();
+        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
+        $account = Account::where('user_id', $user->id)->first();
+        return view('users.category',compact('user', 'account', 'title', 'categories'));
+    }
+
+    public function categoryStore(Request $request) {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'categoryName' => 'required|unique:task_categories,category_name',
+        ]);
+
+        $taskCategory = TaskCategoryModel::create([
+            'category_name' => $validated['categoryName'],
+            'user_id' => $user->id,
+        ]);
+
+        return redirect()->back()->with('success', "Category Added Successfully!");
+    }
+
 }

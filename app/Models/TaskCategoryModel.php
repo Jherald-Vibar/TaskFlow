@@ -11,7 +11,7 @@ class TaskCategoryModel extends Model
     use HasFactory;
     protected $table = 'task_categories';
 
-    protected $fillable = ['user_id', 'category_name'];
+    protected $fillable = ['user_id', 'category_name',];
 
     public function user()
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,12 +17,13 @@ class UserController extends Controller
     public function taskPage() {
        $title = "My Task";
        $user = Auth::user();
+       $categories = TaskCategoryModel::where('user_id', $user->id)->get();
        $account = Account::where('user_id', $user->id)->first();
        $tasks = TaskModel::where('user_id', $user->id)->get();
        if(!$account) {
          return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
        }
-       return view('Users.task', compact('account', 'tasks', 'user' , 'title'));
+       return view('Users.task', compact('account', 'tasks', 'user' , 'title', 'categories'));
     }
 
     public function createForm($id) {
@@ -64,6 +66,7 @@ class UserController extends Controller
     public function viewAccount() {
         $title = "Account";
         $user = Auth::user();
+
         $account = Account::where('user_id', $user->id)->first();
         $tasks = TaskModel::where('user_id', $user->id)->get();
         return view('Users.account', compact('account', 'user' ,'tasks', 'title'));
@@ -136,6 +139,6 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'User Id not Found');
         }
         $user->delete();
-        return redirect()->route('loginForm')->with('success', 'Account Deleted :(');
+        return redirect()->route('loginForm')->with('success', 'Account Deleted 😞');
     }
 }
