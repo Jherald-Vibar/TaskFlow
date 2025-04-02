@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function todayPage() {
-       $title = "Today Task";
+    public function taskPage() {
+       $title = "My Task";
        $user = Auth::user();
        $account = Account::where('user_id', $user->id)->first();
        $tasks = TaskModel::where('user_id', $user->id)->get();
        if(!$account) {
          return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
        }
-       return view('Users.today', compact('account', 'tasks', 'user' , 'title'));
+       return view('Users.task', compact('account', 'tasks', 'user' , 'title'));
     }
 
     public function createForm($id) {
@@ -58,7 +58,7 @@ class UserController extends Controller
             'image' => $validated['image'] ?? null,
             'user_id' => $user->id,
         ]);
-        return redirect()->route('user-today')->with('success', 'Successfully Created an Account');
+        return redirect()->route('user-task')->with('success', 'Successfully Created an Account');
     }
 
     public function viewAccount() {
@@ -128,5 +128,14 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Password updated successfully.');
 
+    }
+
+    public function deleteAccount($id) {
+        $user = User::findorFail($id);
+        if(!$user) {
+            return redirect()->back()->with('error', 'User Id not Found');
+        }
+        $user->delete();
+        return redirect()->route('loginForm')->with('success', 'Account Deleted :(');
     }
 }

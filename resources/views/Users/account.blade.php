@@ -47,25 +47,46 @@
                 </dl>
             </div>
 
-            <div class="flex items-center justify-center space-x-4">
+            <div class="flex flex-col items-center space-y-4">
+                <!-- Edit Button -->
                 <button type="button" onclick="openEditModal()"
                     class="inline-flex items-center justify-center rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800">
                     <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"></path>
+                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z">
+                        </path>
                     </svg>
                     Edit Your Data
                 </button>
 
+                <!-- Change Password Button -->
                 <button type="button" onclick="openPasswordModal()"
                     class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">
                     <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 15v1m-6-4V9a6 6 0 1 1 12 0v3m-6 6h.01M4 12h16"></path>
+                            d="M12 15v1m-6-4V9a6 6 0 1 1 12 0v3m-6 6h.01M4 12h16">
+                        </path>
                     </svg>
                     Change Password
                 </button>
+
+                <!-- Delete Account Button (Now Below Edit Button) -->
+                <form action="{{ route('deleteAccount', ['id' => $user->id]) }}" method="POST" id="delete-form-{{ $user->id }}">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button"
+                        onclick="confirmButton(event, {{ $user->id }})"
+                        class="inline-flex items-center justify-center rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800">
+                        <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 6h18M8 6v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m1 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h12Z">
+                            </path>
+                        </svg>
+                        <span>Delete Account</span>
+                    </button>
+                </form>
             </div>
+
 
 
             <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden justify-center items-center z-50">
@@ -219,5 +240,23 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         @endif
     });
+
+    function confirmButton(event, userId) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: "Delete",
+            text: "Are you sure you want to delete your Account?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Delete it!',
+            cancelButtonText: 'No, Cancel',
+            iconColor: "#d9534f"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + userId).submit();
+            }
+        });
+    }
 
 </script>

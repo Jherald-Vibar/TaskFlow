@@ -36,9 +36,9 @@
             <!-- Navigation Links -->
             <nav class="flex-1 space-y-4">
                 <a href="#" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
-                <a href="{{route('user-today')}}" class="block p-3">📅 Today</a>
-                <a href="#" class="block p-3">✅ My Tasks</a>
-                <a href="#" class="block p-3">📌 Task Categories</a>
+                <a href="{{route('user-task')}}" class="block p-3">✅ My Tasks</a>
+                <a href="" class="block p-3">📅 Today</a>
+                <a href="" class="block p-3">📌 Task Categories</a>
 
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="block p-3 w-full text-left">⚙️ Settings ▼</button>

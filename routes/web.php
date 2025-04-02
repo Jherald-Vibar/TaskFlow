@@ -36,11 +36,11 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 //User
 Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     //Home-Today
-    Route::get('today/', [UserController::class, 'todayPage'])->name('user-today');
+    Route::get('task/', [UserController::class, 'taskPage'])->name('user-task');
 
     //Task Management
-    Route::post('today', [TaskController::class, 'taskStore'])->name('task.store');
-    Route::put('today/{id}', [TaskController::class, 'updateTask'])->name('updateTask');
+    Route::post('task', [TaskController::class, 'taskStore'])->name('task.store');
+    Route::put('task/{id}', [TaskController::class, 'updateTask'])->name('updateTask');
     Route::delete('task/{id}', [TaskController::class, 'deleteTask'])->name('deleteTask');
     Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
 
@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::get('account/settings', [UserController::class, 'viewAccount'])->name('accountSettings');
     Route::put('account/settings/update/{id}', [UserController::class, 'updateAccount'])->name('updateAccount');
     Route::put('account/settings/update-pass/{id}', [UserController::class, 'updatePassword'])->name('updatePassword');
+    Route::delete('user/{id}', [UserController::class, 'deleteAccount'])->name('deleteAccount');
 });
 
 

@@ -32,7 +32,7 @@ class TaskController extends Controller
             'category_id' => $request->category_id ?: null,
         ]);
 
-        return redirect()->route('user-today')->with('success', 'Task Created Successfully!');
+        return redirect()->route('user-task')->with('success', 'Task Created Successfully!');
     }
 
     public function updateTask(Request $request, $id) {
@@ -60,7 +60,7 @@ class TaskController extends Controller
             'priority'    => $request->priority,
             'category_id' => $request->category_id ?: null,
         ]);
-        return redirect()->route('user-today')->with('success', 'Updating Task Successful!');
+        return redirect()->route('user-task')->with('success', 'Updating Task Successful!');
     }
 
     public function deleteTask($id) {
@@ -71,12 +71,12 @@ class TaskController extends Controller
         }
 
         $task->delete();
-        return redirect()->route('user-today')->with('success', "Deleted Task Successful!");
+        return redirect()->route('user-task')->with('success', "Deleted Task Successful!");
     }
 
 
     public function searchTask(Request $request) {
-        $title = "Today Task";
+        $title = "My Task";
         $user = Auth::user();
         $query = $request->input('query');
         $account = Account::where('user_id', $user->id)->first();
@@ -85,6 +85,6 @@ class TaskController extends Controller
         ->get();
 
 
-        return view('users.today', compact('tasks', 'account', 'title'));
+        return view('users.task', compact('tasks', 'account', 'title'));
     }
 }

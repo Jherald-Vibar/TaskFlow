@@ -202,7 +202,7 @@
     document.getElementById('editTaskDueDate').value = dueDate;
     document.getElementById('editTaskPriority').value = priority;
     let form = document.getElementById('editTaskForm');
-        form.action = "{{ url('user/today') }}/" + id;
+        form.action = "{{ url('user/task') }}/" + id;
 
 
     document.getElementById('editTaskModal').classList.remove('hidden');
