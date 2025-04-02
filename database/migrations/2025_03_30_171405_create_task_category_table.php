@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('task_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade')->unique();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // ❌ Remove `unique()`
             $table->string('category_name');
             $table->timestamps();
         });
