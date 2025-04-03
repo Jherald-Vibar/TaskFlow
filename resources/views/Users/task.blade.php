@@ -210,7 +210,12 @@
     document.getElementById('editTaskDescription').value = description || '';
     document.getElementById('editTaskDueDate').value = dueDate;
     document.getElementById('editTaskPriority').value = priority;
-    document.getElementById('editTaskCategory').value = category_id;
+    let categorySelect = document.getElementById('editTaskCategory');
+
+    if (categorySelect) {
+        categorySelect.value = category_id ? category_id : categorySelect.options[0].value;
+    }
+
     let form = document.getElementById('editTaskForm');
         form.action = "{{ url('user/task') }}/" + id;
 
