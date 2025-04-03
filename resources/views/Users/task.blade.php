@@ -28,7 +28,7 @@
             <div class="flex space-x-2">
                 <a href="#"
                     class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
-                    onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}')">
+                    onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}' , {{$task->category_id ?? null}})">
                     <i class="fas fa-edit"></i>
                 </a>
                 <form action="{{ route('deleteTask', ['id' => $task->id]) }}" method="POST" id="delete-form-{{ $task->id }}">
@@ -106,7 +106,7 @@
             <form id="editTaskForm" action="" method="POST">
                 @csrf
                 @method('PUT')
-                <input type="hidden" id="editTaskId">
+                <input type="hidden" id="editTaskId" name="taskId">
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Task Name</label>
@@ -132,9 +132,21 @@
                     </select>
                 </div>
 
+                @if(!empty($categories) && $categories->count() > 0)
+                <div class="mb-4">
+                    <label for="taskCategory" class="text-sm font-bold">Category:</label>
+                    <select id="editTaskCategory" name="category_id" class="border rounded px-3 py-2 bg-gray-100 w-full">
+                        <option value="" disabled selected>Select Category</option>
+                        @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
                 <div class="flex justify-end space-x-2">
                     <button type="button" class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
-                        onclick="closeEditModal()">
+                            onclick="closeEditModal()">
                         Cancel
                     </button>
                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600">
@@ -174,12 +186,13 @@
         document.getElementById("taskModal").classList.add("hidden");
     }
 
-    function openEditModal(id, taskName, description, dueDate, priority) {
+    function openEditModal(id, taskName, description, dueDate, priority, category_id) {
     document.getElementById('editTaskId').value = id;
     document.getElementById('editTaskName').value = taskName;
     document.getElementById('editTaskDescription').value = description || '';
     document.getElementById('editTaskDueDate').value = dueDate;
     document.getElementById('editTaskPriority').value = priority;
+    document.getElementById('editTaskCategory').value = category_id;
     let form = document.getElementById('editTaskForm');
         form.action = "{{ url('user/task') }}/" + id;
 

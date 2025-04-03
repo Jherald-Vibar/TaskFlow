@@ -35,7 +35,11 @@
             <!-- Profile Info -->
             <div class="space-y-4">
                 <div class="flex items-center space-x-4">
+                    @if(!empty($account->image))
                     <img id="profileImage" class="h-16 w-16 rounded-full cursor-pointer" src="{{asset('profile-pic/'. $account->image)}}" alt="{{$account->username}} avatar" />
+                    @else
+                    <img id="profileImage" class="h-16 w-16 rounded-full cursor-pointer" src="{{asset(Auth::user()->image)}}" alt="{{$account->username}} avatar" />
+                    @endif
                     <div>
                         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{$account->username}}</h2>
                         <span class="inline-block rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">User</span>
@@ -111,15 +115,25 @@
                         @method('PUT')
 
                         <!-- Profile Image Preview -->
+                        @auth
                         <div class="mb-4 text-center">
                             <label class="block text-sm font-medium text-gray-700">Profile Image</label>
                             <div class="flex flex-col items-center">
-                                <img id="imagePreview" class="h-20 w-20 rounded-full border"
-                                     src="{{ asset('profile-pic/' . $account->image) }}"
-                                     alt="Profile Image">
+                                @if(!empty($account->image))
+                                    <!-- Display the profile image if available from the user's account -->
+                                    <img id="imagePreview" class="h-20 w-20 rounded-full border"
+                                         src="{{ asset('profile-pic/' . $account->image) }}"
+                                         alt="Profile Image">
+                                @else
+                                    <img id="imagePreview" class="h-20 w-20 rounded-full border"
+                                         src="{{ Auth::user()->image ?? asset('default-avatar.png') }}"
+                                         alt="Profile Image">
+                                @endif
                                 <input type="file" id="profileImage" name="image" class="mt-2 text-sm">
                             </div>
                         </div>
+                        @endauth
+
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Username</label>
                             <input type="text" id="editUserName" name="username" value="{{$account->username}}" class="w-full px-3 py-2 border rounded-lg">

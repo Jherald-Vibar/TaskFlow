@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('content')
 
 <div class="flex justify-between items-center mb-4">
@@ -8,28 +9,49 @@
     </button>
 </div>
 
-@foreach ($categories as $category)
-<div class="max-w-sm bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-    <div class="p-5">
-        <a href="">
-            <h5 class="text-lg font-semibold text-gray-900 dark:text-white leading-tight">
-                {{$category->category_name}}
-            </h5>
-        </a>
-        <div class="flex items-center mt-3 mb-4">
-        </div>
-        <div class="flex items-center justify-between">
-            <span class="text-2xl font-bold text-gray-900 dark:text-white"></span>
-        </div>
-    </div>
-</div>
-@endforeach
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    @foreach ($categories as $category)
+        <div class="bg-white border border-gray-200 rounded-3xl shadow-lg overflow-hidden dark:bg-gray-800 dark:border-gray-700 transform transition duration-500 hover:scale-105 hover:shadow-xl">
+            <div class="p-6">
+                <!-- Category Header -->
+                <a href="{{ route('categoryView', $category->id) }}">
+                    <h5 class="text-xl font-semibold text-gray-900 dark:text-white leading-tight hover:text-blue-600 transition-colors">
+                        {{ $category->category_name }}
+                    </h5>
+                </a>
 
-<!-- Category Modal -->
+                <div class="flex items-center mt-3 mb-4">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Tasks: {{ $category->tasks->count() }}</span>
+                </div>
+
+                @if($category->tasks->count() > 0)
+                <div class="mt-3">
+                    <h6 class="text-sm font-semibold text-gray-900 dark:text-white">Task Names:</h6>
+                    <ul class="space-y-2 list-inside pl-4">
+                        @foreach ($category->tasks as $task)
+                            <li class="text-sm font-medium text-gray-600 dark:text-gray-400 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <span class="mr-2 text-xl text-gray-500 dark:text-gray-300">•</span>
+                                    {{ $task->task_name }}
+                                </div>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ \Carbon\Carbon::parse($task->due_date)->format('M d, Y') }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @else
+                    <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">No tasks in this category.</div>
+                @endif
+            </div>
+        </div>
+    @endforeach
+</div>
+
+<!-- Modal to Create Category -->
 <div id="categoryModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full dark:bg-gray-800">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Create Category</h2>
-        <form action="{{route('categoryStore')}}" method="POST">
+        <form action="{{ route('categoryStore') }}" method="POST">
             @csrf
             <div class="mt-4">
                 <label for="categoryName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category Name</label>

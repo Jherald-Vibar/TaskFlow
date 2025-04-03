@@ -95,6 +95,7 @@ class TaskController extends Controller
         $user = Auth::user();
         $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $account = Account::where('user_id', $user->id)->first();
+
         return view('users.category',compact('user', 'account', 'title', 'categories'));
     }
 
