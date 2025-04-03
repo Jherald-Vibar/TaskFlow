@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
+use App\Models\TaskProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -33,6 +34,12 @@ class TaskController extends Controller
             'category_id' => $request->category_id ?: null,
         ]);
 
+        TaskProgress::create([
+            'task_id' => $task->id,
+            'progress_percentage' => 0,
+            'status'  => 'Pending',
+        ]);
+
         return redirect()->route('user-task')->with('success', 'Task Created Successfully!');
     }
 
@@ -45,15 +52,21 @@ class TaskController extends Controller
             'due_date'    => 'required|date',
             'priority'    => 'required|in:Low,Medium,High',
             'category_id' => 'nullable|exists:task_categories,id',
+            'progress_percentage' => 'nullable|integer|min:0|max:100',
+            'status' => 'nullable|in:Pending,Ongoing,Completed',
         ]);
+
         if($validator->fails()) {
             dd($validator->errors());
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
         $task = TaskModel::where('id', $id)->where('user_id', $user->id)->first();
+
         if (!$task) {
             return redirect()->back()->with('error', 'Task not found or unauthorized.');
         }
+
         $task->update([
             'task_name'   => $request->taskName,
             'description' => $request->description,
@@ -61,6 +74,14 @@ class TaskController extends Controller
             'priority'    => $request->priority,
             'category_id' => $request->category_id ?: null,
         ]);
+
+        $task->progress()->updateOrCreate(
+            ['task_id' => $task->id],
+            [
+                'progress_percentage' => $request->progress_percentage ?? 0,
+                'status' => $request->status ?? 'Pending',
+            ]
+        );
         return redirect()->route('user-task')->with('success', 'Updating Task Successful!');
     }
 

@@ -23,5 +23,27 @@ class TaskModel extends Model
         return $this->belongsTo(TaskCategoryModel::class, 'category_id');
     }
 
-    
+
+    public function progress()
+    {
+        return $this->hasOne(TaskProgress::class, 'task_id')->latest();
+    }
+
+
+    public function updateStatus()
+    {
+        $progress = $this->progress;
+        $status = 'Pending';
+
+        if ($progress) {
+            if ($progress->progress_percentage == 100) {
+                $status = 'Completed';
+            } elseif ($progress->progress_percentage > 0) {
+                $status = 'Ongoing';
+            }
+        }
+
+        $this->update(['status' => $status]);
+    }
 }
+

@@ -22,13 +22,25 @@
                             {{ $task->priority == 'High' ? 'text-red-500' : ($task->priority == 'Medium' ? 'text-yellow-500' : 'text-green-500') }}">
                             {{ $task->priority }}
                         </span>
+                        <div class="text-sm mt-2">
+                            <span class="font-semibold">Progress: </span>
+                            <span class="mr-2">{{ $task->progress->progress_percentage ?? 0 }}%</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="font-semibold">Status: </span>
+                            <span class="
+                                {{ $task->progress ? ($task->progress->status == 'Completed' ? 'text-green-600' :
+                                   ($task->progress->status == 'Ongoing' ? 'text-yellow-500' : 'text-gray-500')) : 'text-gray-500' }}">
+                                {{ $task->progress->status ?? 'Pending' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="flex space-x-2">
                 <a href="#"
                     class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
-                    onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}' , {{$task->category_id ?? null}})">
+                    onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}' , '{{ $task->category_id ?? '' }}', '{{ $task->progress->progress_percentage ?? 0 }}')">
                     <i class="fas fa-edit"></i>
                 </a>
                 <form action="{{ route('deleteTask', ['id' => $task->id]) }}" method="POST" id="delete-form-{{ $task->id }}">
@@ -124,6 +136,11 @@
                 </div>
 
                 <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Progress (%)</label>
+                    <input type="number" id="editTaskProgress" name="progress_percentage" min="0" max="100" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Priority</label>
                     <select id="editTaskPriority" name="priority" class="w-full px-3 py-2 border rounded-lg">
                         <option value="Low">Low</option>
@@ -134,8 +151,8 @@
 
                 @if(!empty($categories) && $categories->count() > 0)
                 <div class="mb-4">
-                    <label for="taskCategory" class="text-sm font-bold">Category:</label>
-                    <select id="editTaskCategory" name="category_id" class="border rounded px-3 py-2 bg-gray-100 w-full">
+                    <label class="block text-sm font-medium text-gray-700">Category</label>
+                    <select id="editTaskCategory" name="category_id" class="w-full px-3 py-2 border rounded-lg">
                         <option value="" disabled selected>Select Category</option>
                         @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->category_name }}</option>
@@ -156,6 +173,7 @@
             </form>
         </div>
     </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {

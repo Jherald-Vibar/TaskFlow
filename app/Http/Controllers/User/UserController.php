@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
+use App\Models\TaskProgress;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +20,10 @@ class UserController extends Controller
        $user = Auth::user();
        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
        $account = Account::where('user_id', $user->id)->first();
-       $tasks = TaskModel::where('user_id', $user->id)->get();
        if(!$account) {
          return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
        }
+       $tasks = TaskModel::with('progress')->where('user_id', $user->id)->get();
        return view('Users.task', compact('account', 'tasks', 'user' , 'title', 'categories'));
     }
 
@@ -66,10 +67,14 @@ class UserController extends Controller
     public function viewAccount() {
         $title = "Account";
         $user = Auth::user();
-
         $account = Account::where('user_id', $user->id)->first();
         $tasks = TaskModel::where('user_id', $user->id)->get();
-        return view('Users.account', compact('account', 'user' ,'tasks', 'title'));
+        $taskIds = $tasks->pluck('id')->toArray();
+        $completedTask = 0;
+        if (!empty($taskIds)) {
+            $completedTask = TaskProgress::whereIn('task_id', $taskIds)->where('status', 'Completed')->count();
+        }
+        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask'));
     }
 
     public function updateAccount(Request $request, $id) {
