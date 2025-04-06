@@ -1,205 +1,312 @@
 @extends('Layouts.app')
 @section('content')
-
-    <!--Task Today-->
-    <div class="bg-white w-full rounded-xl shadow-xl overflow-hidden p-1" id="taskViewModal">
-        @foreach ($tasks as $task)
-        <div class="w-full flex justify-between p-3 pl-4 items-center hover:bg-gray-300 rounded-lg cursor-pointer">
+<div class="sm:px-6 w-full">
+    <div class="px-4 md:px-10 py-4 md:py-7">
+        <div class="flex items-center justify-between">
+            <p tabindex="0" class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">Tasks</p>
+            <div class="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
+                <p>Sort By:</p>
+                <select aria-label="select" class="focus:text-indigo-600 focus:outline-none bg-transparent ml-1">
+                    <option class="text-sm text-indigo-800">Latest</option>
+                    <option class="text-sm text-indigo-800">Oldest</option>
+                    <option class="text-sm text-indigo-800">Latest</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10">
+        <div class="sm:flex items-center justify-between">
             <div class="flex items-center">
-                <div class="mr-4">
-                    <input type="checkbox" class="task-checkbox h-6 w-6 cursor-pointer"
-                        data-task-id="{{ $task->id }}" {{ $task->completed ? 'checked' : '' }}>
-                </div>
-                <div>
-                    <div class="font-bold text-lg round-fill-lg task-name {{ $task->completed ? 'line-through text-gray-500' : '' }}"
-                        id="task-{{ $task->id }}">
-                        {{ $task->task_name }}
+                <a id="filter-all" class="rounded-full focus:outline-none focus:ring-2 focus:bg-indigo-50 focus:ring-indigo-800" href="javascript:void(0)">
+                    <div class="py-2 px-8 bg-indigo-100 text-indigo-700 rounded-full">
+                        <p>All</p>
                     </div>
-                    <div class="text-xs text-gray-500">
-                        <span class="mr-2">{{ $task->due_date }}</span>
-                        <span class="mr-2">{{ $task->description ?? 'No description' }}</span>
-                        <span class="mr-2 font-semibold
-                            {{ $task->priority == 'High' ? 'text-red-500' : ($task->priority == 'Medium' ? 'text-yellow-500' : 'text-green-500') }}">
-                            {{ $task->priority }}
-                        </span>
-                        <div class="text-sm mt-2">
-                            <span class="font-semibold">Progress: </span>
-                            <span class="mr-2">{{ $task->progress->progress_percentage ?? 0 }}%</span>
-                        </div>
-                        <div class="text-sm">
-                            <span class="font-semibold">Status: </span>
-                            <span class="
-                                {{ $task->progress ? ($task->progress->status == 'Completed' ? 'text-green-600' :
-                                   ($task->progress->status == 'Ongoing' ? 'text-yellow-500' : 'text-gray-500')) : 'text-gray-500' }}">
-                                {{ $task->progress->status ?? 'Pending' }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex space-x-2">
-                <a href="#"
-                    class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
-                    onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}' , '{{ $task->category_id ?? '' }}', '{{ $task->progress->progress_percentage ?? 0 }}')">
-                    <i class="fas fa-edit"></i>
                 </a>
-                <form action="{{ route('deleteTask', ['id' => $task->id]) }}" method="POST" id="delete-form-{{ $task->id }}">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button"
-                            onclick="confirmButton(event, {{ $task->id }})"
-                            class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition">
-                        <i class="fas fa-trash"></i
-                    </button>
-                </form>
+                <a id="filter-done" class="rounded-full focus:outline-none focus:ring-2 focus:bg-indigo-50 focus:ring-indigo-800 ml-4 sm:ml-8" href="javascript:void(0)">
+                    <div class="py-2 px-8 text-gray-600 hover:text-indigo-700 hover:bg-indigo-100 rounded-full ">
+                        <p>Done</p>
+                    </div>
+                </a>
+                <a id="filter-pending" class="rounded-full focus:outline-none focus:ring-2 focus:bg-indigo-50 focus:ring-indigo-800 ml-4 sm:ml-8" href="javascript:void(0)">
+                    <div class="py-2 px-8 text-gray-600 hover:text-indigo-700 hover:bg-indigo-100 rounded-full ">
+                        <p>Pending</p>
+                    </div>
+                </a>
             </div>
+            <button onclick="toggleModal()" class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+                <p class="text-sm font-medium leading-none text-white">Add Task</p>
+            </button>
         </div>
-        @endforeach
-    </div>
-
-    <!--Form-->
-    <div class="relative">
-        <button class="bg-transparent text-black px-4 py-2 rounded flex items-center gap-2" onclick="toggleModal()">
-            <i class="fas fa-plus"></i> Add Task
-        </button>
-        <div id="taskModal" class="absolute left-0 mt-2 bg-white p-4 rounded-lg shadow-lg w-full hidden z-50">
-            <form id="taskForm" action="{{ route('task.store') }}" method="POST">
-                @csrf
-                <div class="mb-2 flex gap-2 relative">
-                    <div class="relative">
-                        <label for="prioritySelect" class="text-sm font-bold">Priority:</label>
-                        <select id="prioritySelect" name="priority" class="border rounded px-3 py-2 bg-gray-100 w-full" required>
-                            <option value="" disabled selected>Select Priority</option>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-                    <div class="relative">
-                        <label for="dueDate" class="text-sm font-bold">Due Date:</label>
-                        <input type="date" name="due_date" id="dueDate" class="border rounded px-3 py-2 bg-gray-100 w-full" required>
-                    </div>
-                    <div class="relative">
-                        <label for="taskCategory" class="text-sm font-bold">Category:</label>
-                        <select id="prioritySelect" name="category_id" class="border rounded px-3 py-2 bg-gray-100 w-full">
-                            <option value="" disabled selected>Select Category</option>
-                            @foreach ($categories as $category)
-                            <option value="{{$category->id}}">{{$category->category_name}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <input type="text" name="taskName" class="w-full border rounded px-3 py-2" id="taskName" placeholder="Task Name" required>
-                </div>
-                <div class="mb-2">
-                    <textarea class="w-full border rounded px-3 py-2" id="taskDescription" name="description" placeholder="Description" rows="1"></textarea>
-                </div>
-                <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" onclick="closeModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
-                </div>
-            </form>
+        <div class="mt-7 overflow-x-auto" id="task-list">
+            <table class="w-full whitespace-nowrap">
+                <thead>
+                    <tr class="text-sm font-medium text-gray-600">
+                        <th class="px-5 py-3 text-left"></th>
+                        <th class="px-5 py-3 text-left">Name</th>
+                        <th class="px-5 py-3 text-left">Priority Level</th>
+                        <th class="px-5 py-3 text-left">Created At</th>
+                        <th class="px-5 py-3 text-left">Progress (%)</th>
+                        <th class="px-5 py-3 text-left">Due Date</th>
+                        <th class="px-5 py-3 text-left">Status</th>
+                        <th class="px-5 py-3 text-left">View</th>
+                        <th class="px-5 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($tasks as $task)
+                    <tr tabindex="0" class="focus:outline-none h-16 border border-gray-100 rounded">
+                        <td class="px-5 py-3">
+                            <div class="ml-5">
+                                <div class="bg-gray-200 rounded-sm w-5 h-5 flex flex-shrink-0 justify-center items-center relative">
+                                    <input type="checkbox" class="focus:opacity-100 checkbox opacity-0 absolute cursor-pointer w-full h-full" />
+                                    <div class="check-icon hidden bg-indigo-700 text-white rounded-sm"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center">
+                                <p class="text-base font-medium leading-none text-gray-700 mr-2">{{ $task->task_name }}</p>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M9.16667 2.5L16.6667 10C17.0911 10.4745 17.0911 11.1922 16.6667 11.6667L11.6667 16.6667C11.1922 17.0911 10.4745 17.0911 10 16.6667L2.5 9.16667V5.83333C2.5 3.99238 3.99238 2.5 5.83333 2.5H9.16667" stroke="#52525B" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <circle cx="7.50004" cy="7.49967" r="1.66667" stroke="#52525B" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></circle>
+                                </svg>
+                                <p class="text-sm leading-none {{ $task->priority === 'Low' ? 'text-green-500' : ($task->priority === 'Medium' ? 'text-yellow-500' : 'text-red-500') }}">
+                                    {{ $task->priority }}
+                                </p>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="8" stroke="#52525B" stroke-width="1.25" fill="none"/>
+                                    <line x1="10" y1="10" x2="10" y2="6" stroke="#52525B" stroke-width="1.25" stroke-linecap="round"/>
+                                    <line x1="10" y1="10" x2="13" y2="10" stroke="#52525B" stroke-width="1.25" stroke-linecap="round"/>
+                                </svg>
+                                <p class="text-sm leading-none text-gray-600">{{ $task->created_at }}</p>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center">
+                                <p class="text-sm leading-none text-gray-600">{{ $task->progress->progress_percentage }} %</p>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center">
+                                <p class="text-sm leading-none text-gray-600">{{ $task->due_date }}</p>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            <button class="py-3 px-3 text-sm focus:outline-none leading-none
+                                {{ $task->progress ? ($task->progress->status == 'Completed' ? 'bg-green-100 text-green-600' :
+                                ($task->progress->status == 'Ongoing' ? 'bg-yellow-100 text-yellow-500' : 'bg-gray-100 text-gray-500')) : 'bg-gray-100 text-gray-500' }}
+                                rounded">
+                                <span class="{{ $task->progress ? ($task->progress->status == 'Completed' ? 'text-green-600' :
+                                    ($task->progress->status == 'Ongoing' ? 'text-yellow-500' : 'text-gray-500')) : 'text-gray-500' }}">
+                                    {{ $task->progress->status ?? 'Pending' }}
+                                </span>
+                            </button>
+                        </td>
+                        <td class="px-5 py-3">
+                            <button class="focus:ring-2 focus:ring-offset-2 focus:ring-red-300 text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none">View</button>
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="relative px-5 pt-2">
+                                <button onclick="dropdownFunction(this)" class="focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600 hover:text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v.01M12 12v.01M12 18v.01" />
+                                    </svg>
+                                </button>
+                                <div class="dropdown-content bg-white shadow-md rounded-md w-32 absolute z-30 right-0 mt-2 hidden border border-gray-200">
+                                    <a href="#"
+                                       tabindex="0"
+                                       class="flex items-center justify-start gap-2 text-gray-700 text-sm px-4 py-2 hover:bg-indigo-600 hover:text-white transition-colors rounded-t-md focus:outline-none"
+                                       onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}', '{{ $task->category_id ?? '' }}', '{{ $task->progress->progress_percentage ?? 0 }}')">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                        <span>Edit</span>
+                                    </a>
+                                    <form action="{{ route('deleteTask', ['id' => $task->id]) }}" method="POST" id="delete-form-{{ $task->id }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            type="button"
+                                            tabindex="0"
+                                            class="flex items-center justify-start gap-2 text-red-600 text-sm px-4 py-2 hover:bg-red-600 hover:text-white transition-colors w-full focus:outline-none rounded-b-md" onclick="confirmButton(event, {{ $task->id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
+                                            </svg>
+                                            <span>Delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
-    <div id="dateModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-4 rounded-lg shadow-lg w-1/3">
-            <h2 class="text-lg font-bold mb-2">Select Due Date</h2>
-            <input type="date" id="datePicker" class="border px-3 py-2 rounded">
-            <div class="flex justify-end gap-2 mt-3">
-                <button onclick="closeDateModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-                <button onclick="setDate()" class="bg-green-500 text-white px-4 py-2 rounded">Confirm</button>
-            </div>
+</div>
+
+ <!--Add New TaskFlow Task-->
+<div id="taskModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out">
+    <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Add New Task</h2>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
-    </div>
-    <div id="editTaskModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 class="text-xl font-bold mb-4">Edit Task</h2>
-            <form id="editTaskForm" action="" method="POST">
-                @csrf
-                @method('PUT')
-                <input type="hidden" id="editTaskId" name="taskId">
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Task Name</label>
-                    <input type="text" id="editTaskName" name="taskName" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Description</label>
-                    <input type="text" id="editTaskDescription" name="description" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Due Date</label>
-                    <input type="date" id="editTaskDueDate" name="due_date" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Progress (%)</label>
-                    <input type="number" id="editTaskProgress" name="progress_percentage" min="0" max="100" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Priority</label>
-                    <select id="editTaskPriority" name="priority" class="w-full px-3 py-2 border rounded-lg">
+        <form id="taskForm" action="{{ route('task.store') }}" method="POST">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label for="prioritySelect" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    <select id="prioritySelect" name="priority" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm" required>
+                        <option value="" disabled selected>Select Priority</option>
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
                     </select>
                 </div>
-
-                @if(!empty($categories) && $categories->count() > 0)
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Category</label>
-                    <select id="editTaskCategory" name="category_id" class="w-full px-3 py-2 border rounded-lg">
+                <div>
+                    <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                    <input type="date" name="due_date" id="dueDate" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm" required>
+                </div>
+                <div>
+                    <label for="taskCategory" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select id="taskCategory" name="category_id" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm">
                         <option value="" disabled selected>Select Category</option>
                         @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                         @endforeach
                     </select>
                 </div>
-                @endif
+            </div>
 
-                <div class="flex justify-end space-x-2">
-                    <button type="button" class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
-                            onclick="closeEditModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="mb-4">
+                <label for="taskName" class="block text-sm font-medium text-gray-700 mb-1">Task Name</label>
+                <input type="text" name="taskName" id="taskName" placeholder="Enter task name" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm" required>
+            </div>
+
+            <div class="mb-6">
+                <label for="taskDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea id="taskDescription" name="description" rows="3" placeholder="Describe the task..." class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Create Task</button>
+            </div>
+        </form>
     </div>
+</div>
 
+<!--Edit TaskFlow Task-->
+<div id="editTaskModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out">
+    <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Edit Task</h2>
+            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="editTaskForm" action="" method="POST">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="editTaskId" name="taskId">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="editTaskName" class="block text-sm font-medium text-gray-700 mb-1">Task Name</label>
+                    <input type="text" id="editTaskName" name="taskName" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm" required>
+                </div>
+                <div>
+                    <label for="editTaskDueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                    <input type="date" id="editTaskDueDate" name="due_date" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="editTaskDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea id="editTaskDescription" name="description" rows="3" placeholder="Describe the task..." class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="editTaskPriority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    <select id="editTaskPriority" name="priority" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="editTaskProgress" class="block text-sm font-medium text-gray-700 mb-1">Progress (%)</label>
+                    <input type="number" id="editTaskProgress" name="progress_percentage" min="0" max="100" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm">
+                </div>
+            </div>
+
+            @if(!empty($categories) && $categories->count() > 0)
+            <div class="mb-6">
+                <label for="editTaskCategory" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select id="editTaskCategory" name="category_id" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm">
+                    <option value="" disabled selected>Select Category</option>
+                    @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    .checkbox:checked + .check-icon {
+        display: flex;
+    }
+
+    .dropdown-content {
+        display: none;
+    }
+
+    .dropdown-content.show {
+        display: block;
+    }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        @if(session('status'))
-            Swal.fire({
-                title: 'Success!',
-                text: "{{ session('status') }}",
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        @endif
+    function dropdownFunction(element) {
+        let dropdowns = document.getElementsByClassName("dropdown-content");
+        let target = element.closest("td").querySelector(".dropdown-content");
 
-        @if ($errors->any())
-            Swal.fire({
-                title: "Validation Error!",
-                text: `{!! implode('<br>', $errors->all()) !!}`,
-                icon: "error"
-            });
-        @endif
-    });
+        Array.from(dropdowns).forEach(el => {
+            if (el !== target) el.classList.remove("show");
+        });
+
+        target.classList.toggle("show");
+    }
 
     function toggleModal() {
-
-    let modal = document.getElementById("taskModal");
-    modal.classList.toggle("hidden");
+        let modal = document.getElementById("taskModal");
+        modal.classList.toggle("hidden");
     }
+
     function closeModal() {
         document.getElementById("taskModal").classList.add("hidden");
     }
@@ -226,6 +333,7 @@
     function closeEditModal() {
         document.getElementById('editTaskModal').classList.add('hidden');
     }
+
     function confirmButton(event, taskId) {
         event.preventDefault();
 
@@ -244,6 +352,17 @@
         });
     }
 
+    document.getElementById('filter-all').addEventListener('click', function() {
+        window.location.href = '{{ route("filterTask", ["filter" => "all"]) }}';
+    });
+
+    document.getElementById('filter-done').addEventListener('click', function() {
+        window.location.href = '{{ route("filterTask", ["filter" => "done"]) }}';
+    });
+
+    document.getElementById('filter-pending').addEventListener('click', function() {
+        window.location.href = '{{ route("filterTask", ["filter" => "pending"]) }}';
+    });
 
 </script>
 @endsection

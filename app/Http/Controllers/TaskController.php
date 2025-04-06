@@ -135,4 +135,27 @@ class TaskController extends Controller
         return redirect()->back()->with('success', "Category Added Successfully!");
     }
 
+    public function filterTask(Request $request) {
+        $user = Auth::user();
+        $filter = $request->input('filter', 'all');
+        $account = Account::where('user_id', $user->id)->first();
+        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
+        if ($filter == 'done') {
+            $title = "Completed Task";
+            $tasks = TaskModel::whereHas('progress', function ($query) {
+                $query->where('status', 'Completed');
+            })->get();
+        } elseif ($filter == 'pending') {
+            $title = "Pending Task";
+            $tasks = TaskModel::whereHas('progress', function ($query) {
+                $query->where('status', 'Pending');
+            })->get();
+        } else {
+            $title = "My Task";
+            $tasks = TaskModel::all();
+        }
+
+        return view('Users.task', compact('title', 'account', 'categories', 'tasks'));
+    }
+
 }

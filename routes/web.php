@@ -43,6 +43,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::put('task/{id}', [TaskController::class, 'updateTask'])->name('updateTask');
     Route::delete('task/{id}', [TaskController::class, 'deleteTask'])->name('deleteTask');
     Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
+    Route::get('filter-task', [TaskController::class, 'filterTask'])->name('filterTask');
 
     //Account Management
     Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
