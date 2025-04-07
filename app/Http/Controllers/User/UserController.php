@@ -15,31 +15,42 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function taskPage(Request $request)
-    {
-        $title = "My Task";
-        $user = Auth::user();
-        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
-        $account = Account::where('user_id', $user->id)->first();
-        if (!$account) {
-            return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
-        }
-        $sort = $request->input('sort', 'latest');
-        $filterDate = $request->input('filter_date');
+    public function taskPage(Request $request) {
+    $title = "My Task";
+    $user = Auth::user();
+    $categories = TaskCategoryModel::where('user_id', $user->id)->get();
+    $account = Account::where('user_id', $user->id)->first();
 
-        $tasksQuery = TaskModel::with('progress')
-            ->where('user_id', $user->id);
-        if ($filterDate) {
-            $tasksQuery->whereDate('created_at', $filterDate);
-
-        }
-        $tasks = $tasksQuery
-            ->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc')
-            ->paginate(5)
-            ->appends(['sort' => $sort, 'filter_date' => $filterDate]);
-
-        return view('Users.task', compact('account', 'tasks', 'user', 'title', 'categories', 'sort', 'filterDate'));
+    if (!$account) {
+        return redirect()->route('createForm', ['id' => $user->id])
+                         ->with('error', 'You need to Create an Account!');
     }
+
+    $sort = $request->input('sort', 'latest');
+    $filterDate = $request->input('filterDate');
+    $priority = $request->input('priority');
+
+    $taskQuery = TaskModel::with('progress')->where('user_id', $user->id);
+
+    if($filterDate) {
+        $taskQuery->where('created_at', $filterDate);
+    }
+
+    if($priority) {
+        $taskQuery->where('priority', $priority);
+    }
+
+    $tasks = $taskQuery->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc')
+    ->paginate(5)
+    ->appends([
+        'sort' => $sort,
+        'filter_date' => $filterDate,
+        'priority' => $priority,
+    ]);
+
+    return view('Users.task', compact('account', 'tasks','user','title','categories','sort','filterDate','priority'));
+    }
+
     public function createForm($id) {
         $user = User::find($id);
         return view('Users.create_acc', compact('user'));

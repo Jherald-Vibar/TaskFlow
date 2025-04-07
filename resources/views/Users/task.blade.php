@@ -4,32 +4,43 @@
     <div class="px-4 md:px-10 py-2 md:py-4">
         <div class="flex items-center justify-between">
             <p tabindex="0" class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">Tasks</p>
-            <form method="GET" action="{{ route('user-task') }}" class="w-full max-w-md mt-3 ml-auto">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white shadow-md p-4 rounded-2xl">
-                    <div class="flex flex-col w-full">
-                        <label for="filter-date" class="text-sm text-gray-600 mb-1">Filter by Date</label>
-                        <input
-                            type="date"
-                            name="filter_date"
-                            id="filter-date"
-                            value="{{ request('filter_date') }}"
-                            onchange="this.form.submit()"
-                            class="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                        >
+            <button onclick="document.getElementById('filterModal').showModal()" class="ml-auto px-4 py-2 bg-indigo-500 text-white rounded-lg shadow">
+                Filter Tasks
+            </button>
+            <dialog id="filterModal" class="rounded-xl p-4 w-full max-w-sm shadow-lg">
+                <form method="GET" action="{{ route('user-task') }}" class="space-y-4">
+                    <h2 class="text-lg font-semibold mb-2">Filter Tasks</h2>
+                    <div>
+                        <label for="filter-date" class="block text-sm text-gray-600 mb-1">Date</label>
+                        <input type="date" name="filter_date" id="filter-date" value="{{ request('filter_date') }}"
+                               class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
-                    <div class="flex flex-col w-full">
-                        <label for="sort" class="text-sm text-gray-600 mb-1">Sort By</label>
-                        <select
-                            name="sort"
-                            id="sort"
-                            onchange="this.form.submit()"
-                            class="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-white">
-                            <option value="latest" {{ request('sort', 'latest') == 'latest' ? 'selected' : '' }}>Latest</option>
+
+                    <div>
+                        <label for="sort" class="block text-sm text-gray-600 mb-1">Sort By</label>
+                        <select name="sort" id="sort"
+                                class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
                             <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
                         </select>
                     </div>
-                </div>
-            </form>
+                    <div>
+                        <label for="priority" class="block text-sm text-gray-600 mb-1">Priority</label>
+                        <select name="priority" id="priority"
+                                class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="">All</option>
+                            <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
+                            <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
+                            <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="document.getElementById('filterModal').close()" class="px-3 py-2 bg-gray-300 rounded-md">Cancel</button>
+                        <button type="submit" class="px-3 py-2 bg-indigo-500 text-white rounded-md">Apply</button>
+                    </div>
+                </form>
+            </dialog>
         </div>
     </div>
     <div class="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10">
