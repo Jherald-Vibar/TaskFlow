@@ -144,21 +144,21 @@ class TaskController extends Controller
             $title = "Completed Task";
             $tasks = TaskModel::whereHas('progress', function ($query) {
                 $query->where('status', 'Completed');
-            })->paginate(5);
+            })->where('user_id', $user->id)->paginate(5);
         } elseif ($filter == 'pending') {
             $title = "Pending Task";
             $tasks = TaskModel::whereHas('progress', function ($query) {
                 $query->where('status', 'Pending');
-            })->paginate(5);
+            })->where('user_id', $user->id)->paginate(5);
         } elseif ($filter == 'ongoing') {
             $title = "On Going Task";
             $tasks = TaskModel::whereHas('progress', function ($query) {
                 $query->where('status', 'Ongoing');
-            })->paginate(5);
+            })->where('user_id', $user->id)->paginate(5);
         }
          else {
             $title = "My Task";
-            $tasks = TaskModel::paginate(5);
+            $tasks = TaskModel::where('user_id', $user->id)->paginate(5);
         }
 
         return view('Users.task', compact('title', 'account', 'categories', 'tasks'));

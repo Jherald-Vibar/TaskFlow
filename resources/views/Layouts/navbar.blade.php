@@ -1,5 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<nav class="bg-red-800">
+<nav class="bg-gradient-to-r from-red-500 via-red-600 to-red-700">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="{{ route('homepage') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="{{ asset('images/logo.png') }}" class="h-8" alt="Flowbite Logo" />
@@ -12,7 +12,7 @@
             </svg>
         </button>
         <div class="hidden w-full md:block md:w-auto" id="navbar-default">
-            <ul class="font-medium flex flex-col justify-center items-center p-4 md:p-0 mt-4 border border-red-800 rounded-lg bg-red-800 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
+            <ul class="font-medium flex flex-col justify-center items-center p-4 md:p-0 mt-4 border border-red-800 rounded-lgbg-gradient-to-r from-red-500 via-red-600 to-red-700 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
                 @auth
                 <li><a href="" class="block py-2 px-3 text-white hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0">Dashboard</a></li>
                 @else

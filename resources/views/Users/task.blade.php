@@ -49,7 +49,6 @@
                         <th class="px-3 py-2 text-left"></th>
                         <th class="px-3 py-2 text-left">Name</th>
                         <th class="px-3 py-2 text-left">Priority Level</th>
-                        <th class="px-3 py-2 text-left">Created At</th>
                         <th class="px-3 py-2 text-left">Progress (%)</th>
                         <th class="px-3 py-2 text-left">Due Date</th>
                         <th class="px-3 py-2 text-left">Status</th>
@@ -82,19 +81,9 @@
                                     <path d="M9.16667 2.5L16.6667 10C17.0911 10.4745 17.0911 11.1922 16.6667 11.6667L11.6667 16.6667C11.1922 17.0911 10.4745 17.0911 10 16.6667L2.5 9.16667V5.83333C2.5 3.99238 3.99238 2.5 5.83333 2.5H9.16667" stroke="#52525B" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
                                     <circle cx="7.50004" cy="7.49967" r="1.66667" stroke="#52525B" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></circle>
                                 </svg>
-                                <p class="text-xs leading-none {{ $task->priority === 'Low' ? 'text-green-500' : ($task->priority === 'Medium' ? 'text-yellow-500' : 'text-red-500') }}">
+                                <p class="text-xs font-bold leading-none {{ $task->priority === 'Low' ? 'text-green-500' : ($task->priority === 'Medium' ? 'text-yellow-500' : 'text-red-500') }}">
                                     {{ $task->priority }}
                                 </p>
-                            </div>
-                        </td>
-                        <td class="px-3 py-2">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none">
-                                    <circle cx="10" cy="10" r="8" stroke="#52525B" stroke-width="1.25" fill="none"/>
-                                    <line x1="10" y1="10" x2="10" y2="6" stroke="#52525B" stroke-width="1.25" stroke-linecap="round"/>
-                                    <line x1="10" y1="10" x2="13" y2="10" stroke="#52525B" stroke-width="1.25" stroke-linecap="round"/>
-                                </svg>
-                                <p class="text-xs leading-none text-gray-600">{{ $task->created_at }}</p>
                             </div>
                         </td>
                         <td class="px-3 py-2">
@@ -119,7 +108,7 @@
                             </button>
                         </td>
                         <td class="px-3 py-2">
-                            <button class="focus:ring-2 focus:ring-offset-2 focus:ring-red-300 text-xs leading-none text-gray-600 py-2 px-4 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none">View</button>
+                            <button class="focus:ring-2 focus:ring-offset-2 focus:ring-red-300 text-xs leading-none  text-gray-600 py-2 px-4 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none" onclick="openViewModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}', '{{ $task->category_id ?? '' }}', '{{ $task->progress->progress_percentage ?? 0 }}', '{{$task->progress->status}}')">View</button>
                         </td>
                         <td class="px-3 py-2">
                             <div class="relative px-3 pt-2">
@@ -337,6 +326,88 @@
         </form>
     </div>
 </div>
+<!--View TaskFlow Modal-->
+<div id="viewModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out">
+    <div class="bg-white w-full max-w-4xl mx-4 p-6 rounded-2xl shadow-2xl space-y-6 transform scale-100 transition-transform duration-300 ease-in-out">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b pb-4">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-6h13M9 7v.01M3 3v18h18" />
+                </svg>
+                Task Details
+            </h2>
+            <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-xl p-4 shadow-md">
+                <label class="flex items-center font-medium text-gray-600 mb-2">
+                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6" />
+                    </svg>
+                    Task Name
+                </label>
+                <p id="viewTaskName" class="text-gray-900 font-semibold text-base"></p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 shadow-md">
+                <label class="flex items-center font-medium text-gray-600 mb-2">
+                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M8 8h8M8 16h8" />
+                    </svg>
+                    Description
+                </label>
+                <p id="viewTaskDescription" class="text-gray-700 text-sm"></p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 shadow-md">
+                <label class="flex items-center font-medium text-gray-600 mb-2">
+                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18" />
+                    </svg>
+                    Due Date
+                </label>
+                <p id="viewTaskDueDate" class="text-gray-700 text-sm"></p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 shadow-md">
+                <label class="flex items-center font-medium text-gray-600 mb-2">
+                    <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Status
+                </label>
+                <p id="viewTaskStatus" class="font-semibold text-sm text-gray-800"></p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div class="bg-gray-50 rounded-xl p-4 shadow-md">
+                <label class="flex items-center font-medium text-gray-600 mb-2">
+                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3M12 6a9 9 0 110 18 9 9 0 010-18z"/>
+                    </svg>
+                    Progress
+                </label>
+                <p id="viewTaskProgressText" class="text-gray-700 font-medium"></p>
+            </div>
+
+            <!-- Circle Progress -->
+            <div class="relative w-48 h-48 mx-auto">
+                <div class="absolute inset-0 rounded-full bg-gray-200 shadow-inner"></div>
+                <div id="progressCircle" class="absolute inset-0 rounded-full transition-all duration-500 ease-in-out" style="background: conic-gradient(#4f46e5 0%, #e5e7eb 0%);"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span id="progressValue" class="text-3xl font-bold text-white">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end">
+            <button onclick="closeViewModal()" class="px-5 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition font-medium shadow-sm">Close</button>
+        </div>
+    </div>
+</div>
 
 <style>
     .checkbox:checked + .check-icon {
@@ -450,6 +521,25 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+
+    function openViewModal(id, taskName, description, dueDate, priority, category_id, progress, taskStatus) {
+        document.getElementById('viewTaskName').textContent = taskName;
+        document.getElementById('viewTaskDescription').textContent = description;
+        document.getElementById('viewTaskDueDate').textContent = dueDate;
+        document.getElementById('viewTaskStatus').textContent = taskStatus;
+        document.getElementById('viewTaskProgressText').textContent = `${progress}%`;
+        document.getElementById('viewModal').classList.remove('hidden');
+
+
+        const clampedProgress = Math.min(Math.max(progress, 0), 100);
+        document.getElementById('progressCircle').style.background = `conic-gradient(#a72525 ${clampedProgress}%, #e5e7eb ${clampedProgress}%)`;
+        document.getElementById('progressValue').textContent = `${clampedProgress}%`;
+        }
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.add('hidden');
+        }
+
+
 
 </script>
 @endsection
