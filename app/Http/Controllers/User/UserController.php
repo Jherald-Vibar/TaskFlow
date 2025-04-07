@@ -23,7 +23,7 @@ class UserController extends Controller
        if(!$account) {
          return redirect()->route('createForm', ['id' => $user->id])->with('error', 'You need to Create an Account!');
        }
-       $tasks = TaskModel::with('progress')->where('user_id', $user->id)->get();
+       $tasks = TaskModel::with('progress')->where('user_id', $user->id)->paginate(5);
        return view('Users.task', compact('account', 'tasks', 'user' , 'title', 'categories'));
     }
 

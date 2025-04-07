@@ -16,7 +16,7 @@
     <div class="flex h-screen">
 
         <!-- Sidebar -->
-        <aside class="w-64 bg-red-600 text-white p-5 flex flex-col">
+        <aside class="w-64 bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white p-5 flex flex-col fixed inset-y-0 left-0 z-10 overflow-y-auto shadow-lg">
             <div class="flex items-center space-x-3 mb-5">
                 @auth
                 @if(empty($account->image))
@@ -27,54 +27,84 @@
                 <div>
                 @endauth
                     @auth
-                    <h2 class="font-bold">{{$account->username}}</h2>
-                    <p class="text-xs opacity-75">{{Auth::user()->email}}</p>
+                    <h2 class="font-bold text-lg">{{ $account->username }}</h2>
+                    <p class="text-xs opacity-75">{{ Auth::user()->email }}</p>
                     @endauth
                 </div>
             </div>
-
             <!-- Navigation Links -->
             <nav class="flex-1 space-y-4">
-                <a href="#" class="block bg-white text-red-600 p-3 rounded-lg">📊 Dashboard</a>
-                <a href="{{route('user-task')}}" class="block p-3">✅ My Tasks</a>
-                <a href="" class="block p-3">📅 Today</a>
-                <a href="{{route('categoryView')}}" class="block p-3">📌 Task Categories</a>
-
+                <a href="#" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                    <img src="{{ asset('images/dashboard.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                    <span class="text-sm font-medium">Dashboard</span>
+                </a>
+                <a href="{{route('user-task')}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                    <img src="{{ asset('images/task.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                        <span class="text-sm font-medium">My Task</span>
+                </a>
+                <a href="#" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                    <img src="{{ asset('images/today.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                    <span class="text-sm font-medium">Today</span>
+                </a>
+                <a href="{{route('categoryView')}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                    <img src="{{ asset('images/categories.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                    <span class="text-sm font-medium">Task Category</span>
+                </a>
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="block p-3 w-full text-left">⚙️ Settings ▼</button>
-                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
-                        <a href="{{route('accountSettings')}}" class="block px-4 text-black py-2 hover:bg-gray-100">👤 Account Settings</a>
-                        <a href="#" class="block px-4 text-black py-2 hover:bg-gray-100">⚙️ General Settings</a>
+                    <button @click="open = !open" class="block p-3 w-full text-left hover:bg-black  hover:text-white rounded-lg transition duration-300">
+                        <img src="{{ asset('images/settings.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                        <span class="text-sm font-medium">Settings</span>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-black border rounded-lg shadow-lg">
+                        <a href="{{route('accountSettings')}}" class="block px-4 text-white py-2 ">
+                            <img src="{{ asset('images/account.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                            <span class="text-sm font-medium">Account Settings</span>
+                            </a>
+                        </a>
+                        <a href="" class="block px-4 text-white py-2 ">
+                            <img src="{{ asset('images/general.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                            <span class="text-sm font-medium">General Settings</span>
+                            </a>
+                        </a>
                     </div>
                 </div>
-
-                <a href="#" class="block p-3">❓ Help</a>
+                <a href="#" class="block p-3 hover:bg-black rounded-lg hover:text-white">
+                    <img src="{{ asset('images/help.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                    <span class="text-sm font-medium">Help</span>
+                </a>
             </nav>
 
-            <a href="{{route('logout')}}" class="mt-5 block p-3 bg-white text-red-600 rounded-lg">🚪 Logout</a>
+            <div class="mt-5 border-t-2 border-black">
+                <a href="{{route('logout')}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                    <img src="{{ asset('images/logout.png') }}" width="24px" alt="Logout" class="inline-block mr-2">
+                    <span class="text-sm font-medium">Logout</span>
+                </a>
+            </div>
         </aside>
 
+
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col ml-64">
 
             <!-- Navbar -->
             <header class="bg-white p-4 shadow-md flex justify-between items-center">
                 <h1 class="text-xl font-bold">{{$title}}</h1>
                 <div class="flex items-center space-x-3">
-                    <form action="{{ route('searchTask') }}" method="GET" class="mb-4">
+                    <form action="{{ route('searchTask') }}" method="GET" class="mb-4 flex items-center space-x-2">
                         <input type="text" name="query" value="{{ request('query') }}"
                                placeholder="Search tasks..."
-                               class="border p-2 rounded-lg">
-                        <button class="bg-red-500 text-white px-4 py-2 rounded-lg">🔍</button>
+                               class="border p-2 rounded-lg flex-grow">
+                        <button class="bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                            <img src="{{ asset('images/search.png') }}" alt="" class="w-5 h-5">
+                        </button>
                     </form>
                 </div>
                 <div class="text-sm text-gray-600">
-
                     <span id="current-date"></span>
                 </div>
             </header>
 
-           <!--Main-->
+           <!-- Main -->
             <main class="flex-1 p-6 bg-gray-50">
                 @yield('content')
             </main>
@@ -89,7 +119,6 @@
             const formattedDate = today.toLocaleDateString('en-US', options);
             document.getElementById('current-date').textContent = formattedDate;
         }
-
 
         displayCurrentDate();
     </script>

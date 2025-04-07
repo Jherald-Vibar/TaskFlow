@@ -105,10 +105,10 @@ class TaskController extends Controller
         $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $tasks = TaskModel::where('task_name', 'LIKE', "%$query%")
         ->where('user_id', $user->id)
-        ->get();
+        ->paginate(5);
 
 
-        return view('users.task', compact('tasks', 'account', 'title', 'categories'));
+        return view('Users.task', compact('tasks', 'account', 'title', 'categories'));
     }
 
     public function categoryView() {
@@ -117,7 +117,7 @@ class TaskController extends Controller
         $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $account = Account::where('user_id', $user->id)->first();
 
-        return view('users.category',compact('user', 'account', 'title', 'categories'));
+        return view('Users.category',compact('user', 'account', 'title', 'categories'));
     }
 
     public function categoryStore(Request $request) {
@@ -144,18 +144,51 @@ class TaskController extends Controller
             $title = "Completed Task";
             $tasks = TaskModel::whereHas('progress', function ($query) {
                 $query->where('status', 'Completed');
-            })->get();
+            })->paginate(5);
         } elseif ($filter == 'pending') {
             $title = "Pending Task";
             $tasks = TaskModel::whereHas('progress', function ($query) {
                 $query->where('status', 'Pending');
-            })->get();
-        } else {
+            })->paginate(5);
+        } elseif ($filter == 'ongoing') {
+            $title = "On Going Task";
+            $tasks = TaskModel::whereHas('progress', function ($query) {
+                $query->where('status', 'Ongoing');
+            })->paginate(5);
+        }
+         else {
             $title = "My Task";
-            $tasks = TaskModel::all();
+            $tasks = TaskModel::paginate(5);
         }
 
         return view('Users.task', compact('title', 'account', 'categories', 'tasks'));
+    }
+
+    public function updateProgress(Request $request, $id) {
+        $user = Auth::user();
+
+        $validated = Validator::make($request->all(),[
+            'progress_percentage' => 'nullable|integer|min:0|max:100',
+        ]);
+
+        if($validated->fails()) {
+            return redirect()->back()->withErrors($validated)->withInput();
+        }
+
+        $task = TaskModel::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$task) {
+            return redirect()->back()->with('error', 'Task not found or unauthorized.');
+        }
+
+        $task->progress()->updateOrCreate(
+            ['task_id' => $task->id],
+            [
+                'progress_percentage' => $request->progress_percentage ?? 0,
+            ]
+        );
+
+        return redirect()->route('user-task')->with('success', 'Task Progress Updated!');
     }
 
 }

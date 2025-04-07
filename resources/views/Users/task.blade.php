@@ -27,80 +27,88 @@
                         <p>Done</p>
                     </div>
                 </a>
+                <a id="filter-ongoing" class="rounded-full focus:outline-none focus:ring-2 focus:bg-indigo-50 focus:ring-indigo-800 ml-4 sm:ml-8" href="javascript:void(0)">
+                    <div class="py-2 px-8 text-gray-600 hover:text-indigo-700 hover:bg-indigo-100 rounded-full ">
+                        <p>Ongoing</p>
+                    </div>
+                </a>
                 <a id="filter-pending" class="rounded-full focus:outline-none focus:ring-2 focus:bg-indigo-50 focus:ring-indigo-800 ml-4 sm:ml-8" href="javascript:void(0)">
                     <div class="py-2 px-8 text-gray-600 hover:text-indigo-700 hover:bg-indigo-100 rounded-full ">
                         <p>Pending</p>
                     </div>
                 </a>
             </div>
-            <button onclick="toggleModal()" class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+            <button onclick="toggleModal()" class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-gradient-to-r from-red-500 via-red-600 to-red-700  hover:bg-indigo-600 focus:outline-none rounded">
                 <p class="text-sm font-medium leading-none text-white">Add Task</p>
             </button>
         </div>
-        <div class="mt-7 overflow-x-auto" id="task-list">
+        <div class="mt-5 overflow-x-auto" id="task-list">
             <table class="w-full whitespace-nowrap">
                 <thead>
-                    <tr class="text-sm font-medium text-gray-600">
-                        <th class="px-5 py-3 text-left"></th>
-                        <th class="px-5 py-3 text-left">Name</th>
-                        <th class="px-5 py-3 text-left">Priority Level</th>
-                        <th class="px-5 py-3 text-left">Created At</th>
-                        <th class="px-5 py-3 text-left">Progress (%)</th>
-                        <th class="px-5 py-3 text-left">Due Date</th>
-                        <th class="px-5 py-3 text-left">Status</th>
-                        <th class="px-5 py-3 text-left">View</th>
-                        <th class="px-5 py-3 text-left">Actions</th>
+                    <tr class="text-xs font-medium text-gray-600">
+                        <th class="px-3 py-2 text-left"></th>
+                        <th class="px-3 py-2 text-left">Name</th>
+                        <th class="px-3 py-2 text-left">Priority Level</th>
+                        <th class="px-3 py-2 text-left">Created At</th>
+                        <th class="px-3 py-2 text-left">Progress (%)</th>
+                        <th class="px-3 py-2 text-left">Due Date</th>
+                        <th class="px-3 py-2 text-left">Status</th>
+                        <th class="px-3 py-2 text-left">View</th>
+                        <th class="px-3 py-2 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @if ($tasks->count())
                     @foreach ($tasks as $task)
-                    <tr tabindex="0" class="focus:outline-none h-16 border border-gray-100 rounded">
-                        <td class="px-5 py-3">
-                            <div class="ml-5">
-                                <div class="bg-gray-200 rounded-sm w-5 h-5 flex flex-shrink-0 justify-center items-center relative">
+                    <tr tabindex="0" class="focus:outline-none h-12 border border-gray-100 rounded">
+                        <td class="px-3 py-2">
+                            <div class="ml-3">
+                                <div class="bg-gray-200 rounded-sm w-4 h-4 flex flex-shrink-0 justify-center items-center relative">
                                     <input type="checkbox" class="focus:opacity-100 checkbox opacity-0 absolute cursor-pointer w-full h-full" />
                                     <div class="check-icon hidden bg-indigo-700 text-white rounded-sm"></div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-5 py-3">
+                        <td class="px-3 py-2">
                             <div class="flex items-center">
-                                <p class="text-base font-medium leading-none text-gray-700 mr-2">{{ $task->task_name }}</p>
+                                <p class="text-sm font-medium leading-none text-gray-700 mr-2">
+                                    {{ \Str::limit($task->task_name, 6) }}
+                                </p>
                             </div>
                         </td>
-                        <td class="px-5 py-3">
+                        <td class="px-3 py-2">
                             <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none">
                                     <path d="M9.16667 2.5L16.6667 10C17.0911 10.4745 17.0911 11.1922 16.6667 11.6667L11.6667 16.6667C11.1922 17.0911 10.4745 17.0911 10 16.6667L2.5 9.16667V5.83333C2.5 3.99238 3.99238 2.5 5.83333 2.5H9.16667" stroke="#52525B" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
                                     <circle cx="7.50004" cy="7.49967" r="1.66667" stroke="#52525B" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></circle>
                                 </svg>
-                                <p class="text-sm leading-none {{ $task->priority === 'Low' ? 'text-green-500' : ($task->priority === 'Medium' ? 'text-yellow-500' : 'text-red-500') }}">
+                                <p class="text-xs leading-none {{ $task->priority === 'Low' ? 'text-green-500' : ($task->priority === 'Medium' ? 'text-yellow-500' : 'text-red-500') }}">
                                     {{ $task->priority }}
                                 </p>
                             </div>
                         </td>
-                        <td class="px-5 py-3">
+                        <td class="px-3 py-2">
                             <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none">
                                     <circle cx="10" cy="10" r="8" stroke="#52525B" stroke-width="1.25" fill="none"/>
                                     <line x1="10" y1="10" x2="10" y2="6" stroke="#52525B" stroke-width="1.25" stroke-linecap="round"/>
                                     <line x1="10" y1="10" x2="13" y2="10" stroke="#52525B" stroke-width="1.25" stroke-linecap="round"/>
                                 </svg>
-                                <p class="text-sm leading-none text-gray-600">{{ $task->created_at }}</p>
+                                <p class="text-xs leading-none text-gray-600">{{ $task->created_at }}</p>
                             </div>
                         </td>
-                        <td class="px-5 py-3">
+                        <td class="px-3 py-2">
                             <div class="flex items-center">
-                                <p class="text-sm leading-none text-gray-600">{{ $task->progress->progress_percentage }} %</p>
+                                <p class="text-xs leading-none text-gray-600">{{ $task->progress->progress_percentage }} %</p>
                             </div>
                         </td>
-                        <td class="px-5 py-3">
+                        <td class="px-3 py-2">
                             <div class="flex items-center">
-                                <p class="text-sm leading-none text-gray-600">{{ $task->due_date }}</p>
+                                <p class="text-xs leading-none text-gray-600">{{ $task->due_date }}</p>
                             </div>
                         </td>
-                        <td class="px-5 py-3">
-                            <button class="py-3 px-3 text-sm focus:outline-none leading-none
+                        <td class="px-3 py-2">
+                            <button class="py-2 px-2 text-xs focus:outline-none leading-none
                                 {{ $task->progress ? ($task->progress->status == 'Completed' ? 'bg-green-100 text-green-600' :
                                 ($task->progress->status == 'Ongoing' ? 'bg-yellow-100 text-yellow-500' : 'bg-gray-100 text-gray-500')) : 'bg-gray-100 text-gray-500' }}
                                 rounded">
@@ -110,25 +118,34 @@
                                 </span>
                             </button>
                         </td>
-                        <td class="px-5 py-3">
-                            <button class="focus:ring-2 focus:ring-offset-2 focus:ring-red-300 text-sm leading-none text-gray-600 py-3 px-5 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none">View</button>
+                        <td class="px-3 py-2">
+                            <button class="focus:ring-2 focus:ring-offset-2 focus:ring-red-300 text-xs leading-none text-gray-600 py-2 px-4 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none">View</button>
                         </td>
-                        <td class="px-5 py-3">
-                            <div class="relative px-5 pt-2">
+                        <td class="px-3 py-2">
+                            <div class="relative px-3 pt-2">
                                 <button onclick="dropdownFunction(this)" class="focus:outline-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600 hover:text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600 hover:text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v.01M12 12v.01M12 18v.01" />
                                     </svg>
                                 </button>
-                                <div class="dropdown-content bg-white shadow-md rounded-md w-32 absolute z-30 right-0 mt-2 hidden border border-gray-200">
+                                <div class="dropdown-content bg-white shadow-md rounded-md w-28 absolute z-30 right-0 mt-2 hidden border border-gray-200">
                                     <a href="#"
                                        tabindex="0"
-                                       class="flex items-center justify-start gap-2 text-gray-700 text-sm px-4 py-2 hover:bg-indigo-600 hover:text-white transition-colors rounded-t-md focus:outline-none"
+                                       class="flex items-center justify-start gap-2 text-gray-700 text-xs px-4 py-2 hover:bg-indigo-600 hover:text-white transition-colors rounded-t-md focus:outline-none"
                                        onclick="openEditModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->priority }}', '{{ $task->category_id ?? '' }}', '{{ $task->progress->progress_percentage ?? 0 }}')">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
                                         </svg>
                                         <span>Edit</span>
+                                    </a>
+                                    <a href="#"
+                                       tabindex="0"
+                                       class="flex items-center justify-start gap-2 text-gray-700 text-xs px-4 py-2 hover:bg-indigo-600 hover:text-white transition-colors rounded-t-md focus:outline-none"
+                                       onclick="openEditProgressModal({{ $task->id }},'{{ $task->progress->progress_percentage ?? 0 }}', '{{ $task->task_name}}')">
+                                       <svg class="w-2 h-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                        <span>Progress</span>
                                     </a>
                                     <form action="{{ route('deleteTask', ['id' => $task->id]) }}" method="POST" id="delete-form-{{ $task->id }}">
                                         @csrf
@@ -136,7 +153,7 @@
                                         <button
                                             type="button"
                                             tabindex="0"
-                                            class="flex items-center justify-start gap-2 text-red-600 text-sm px-4 py-2 hover:bg-red-600 hover:text-white transition-colors w-full focus:outline-none rounded-b-md" onclick="confirmButton(event, {{ $task->id }})">
+                                            class="flex items-center justify-start gap-2 text-red-600 text-xs px-4 py-2 hover:bg-red-600 hover:text-white transition-colors w-full focus:outline-none rounded-b-md" onclick="confirmButton(event, {{ $task->id }})">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
@@ -149,7 +166,21 @@
                         </td>
                     </tr>
                     @endforeach
+                    @else
+                    <tr>
+                        <td colspan="9" class="text-center text-gray-500 py-4">
+                            No Task Found
+                        </td>
+                    </tr>
+                @endif
                 </tbody>
+                <div class="mt-4">
+                    @if ($tasks->count())
+                        {{ $tasks->links('pagination::tailwind') }}
+                    @else
+                        <p class="text-gray-500 text-sm">No Task Found</p>
+                    @endif
+                </div>
             </table>
         </div>
     </div>
@@ -276,6 +307,37 @@
         </form>
     </div>
 </div>
+<!--Edit Progress TaskFlow-->
+<div id="editProgressModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out">
+    <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Change Progress</h2>
+            <button onclick="closeProgressModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="editProgressForm" action="" method="POST" class="bg-white p-6 rounded-lg w-full max-w-lg mx-auto">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="editTaskId" name="taskId">
+            <div class="mb-6">
+                <label for="taskNames" class="block text-sm font-medium text-gray-700 mb-1">Task Name</label>
+                <span id="taskNames" class="text-gray-900 text-lg font-semibold"></span>
+            </div>
+            <div class="mb-6">
+                <label for="editTaskProgress" class="block text-sm font-medium text-gray-700 mb-1">Progress (%)</label>
+                <input type="number" id="editTaskProgress" name="progress_percentage" min="0" max="100" class="w-full px-4 py-2 border rounded-lg bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
     .checkbox:checked + .check-icon {
         display: flex;
@@ -360,9 +422,35 @@
         window.location.href = '{{ route("filterTask", ["filter" => "done"]) }}';
     });
 
+    document.getElementById('filter-ongoing').addEventListener('click', function() {
+        window.location.href = '{{ route("filterTask", ["filter" => "ongoing"]) }}';
+    });
+
     document.getElementById('filter-pending').addEventListener('click', function() {
         window.location.href = '{{ route("filterTask", ["filter" => "pending"]) }}';
     });
+
+    function openEditProgressModal(taskId, progressPercentage, taskName) {
+    document.getElementById('editTaskId').value = taskId;
+    document.getElementById('editTaskProgress').value = progressPercentage;
+
+    document.getElementById('taskNames').innerText = taskName;
+
+    let form = document.getElementById('editProgressForm');
+    form.action = `/user/tasks/${taskId}`;
+
+
+    const modal = document.getElementById('editProgressModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    }
+
+    function closeProgressModal() {
+        // Close the modal
+        const modal = document.getElementById('editProgressModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 
 </script>
 @endsection

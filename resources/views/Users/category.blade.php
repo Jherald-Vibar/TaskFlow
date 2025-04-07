@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('Layouts.app')
 
 @section('content')
 
 <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Category Details</h2>
-    <button onclick="document.getElementById('categoryModal').classList.remove('hidden')" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
+    <button onclick="document.getElementById('categoryModal').classList.remove('hidden')" class="text-white bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
         Create Category
     </button>
 </div>

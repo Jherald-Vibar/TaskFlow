@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     //Task Management
     Route::post('task', [TaskController::class, 'taskStore'])->name('task.store');
     Route::put('task/{id}', [TaskController::class, 'updateTask'])->name('updateTask');
+    Route::put('tasks/{id}', [TaskController::class, 'updateProgress'])->name('updateProgress');
     Route::delete('task/{id}', [TaskController::class, 'deleteTask'])->name('deleteTask');
     Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
     Route::get('filter-task', [TaskController::class, 'filterTask'])->name('filterTask');
