@@ -8,6 +8,7 @@ use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\TaskProgress;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,39 +17,39 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     public function taskPage(Request $request) {
-    $title = "My Task";
-    $user = Auth::user();
-    $categories = TaskCategoryModel::where('user_id', $user->id)->get();
-    $account = Account::where('user_id', $user->id)->first();
+        $title = "My Task";
+        $user = Auth::user();
+        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
+        $account = Account::where('user_id', $user->id)->first();
 
-    if (!$account) {
-        return redirect()->route('createForm', ['id' => $user->id])
-                         ->with('error', 'You need to Create an Account!');
-    }
+        if (!$account) {
+            return redirect()->route('createForm', ['id' => $user->id])
+                             ->with('error', 'You need to Create an Account!');
+        }
 
-    $sort = $request->input('sort', 'latest');
-    $filterDate = $request->input('filterDate');
-    $priority = $request->input('priority');
+        $sort = $request->input('sort', 'oldest');
+        $filterDate = $request->input('filter_date');
+        $priority = $request->input('priority');
 
-    $taskQuery = TaskModel::with('progress')->where('user_id', $user->id);
+        $taskQuery = TaskModel::with('progress')->where('user_id', $user->id);
 
-    if($filterDate) {
-        $taskQuery->where('created_at', $filterDate);
-    }
+        if ($filterDate) {
+            $taskQuery->whereDate('created_at', $filterDate);
+        }
 
-    if($priority) {
-        $taskQuery->where('priority', $priority);
-    }
+        if ($priority) {
+            $taskQuery->where('priority', $priority);
+        }
 
-    $tasks = $taskQuery->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc')
-    ->paginate(5)
-    ->appends([
-        'sort' => $sort,
-        'filter_date' => $filterDate,
-        'priority' => $priority,
-    ]);
+        $tasks = $taskQuery->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc')
+            ->paginate(5)
+            ->appends([
+                'sort' => $sort,
+                'filter_date' => $filterDate,
+                'priority' => $priority,
+            ]);
 
-    return view('Users.task', compact('account', 'tasks','user','title','categories','sort','filterDate','priority'));
+        return view('Users.task', compact('account', 'tasks','user','title', 'categories','sort','filterDate','priority'));
     }
 
     public function createForm($id) {
@@ -98,7 +99,11 @@ class UserController extends Controller
         if (!empty($taskIds)) {
             $completedTask = TaskProgress::whereIn('task_id', $taskIds)->where('status', 'Completed')->count();
         }
-        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask'));
+        $missingTask = $tasks->filter(function ($task) {
+            return $task->due_date < Carbon::now() &&
+                   (!$task->progress || $task->progress->status !== 'Completed');
+        })->count();
+        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask'));
     }
 
     public function updateAccount(Request $request, $id) {
@@ -190,4 +195,5 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('loginForm')->with('success', 'Account Deleted 😞');
     }
+
 }

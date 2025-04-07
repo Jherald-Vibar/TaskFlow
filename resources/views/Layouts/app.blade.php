@@ -50,6 +50,10 @@
                     <img src="{{ asset('images/categories.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
                     <span class="text-sm font-medium">Task Category</span>
                 </a>
+                <a href="{{route('upcomingTask' ,['date' => now('Asia/Manila')->format('Y-m-d')])}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                    <img src="{{ asset('images/upcoming.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
+                    <span class="text-sm font-medium">Upcoming Task</span>
+                </a>
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="block p-3 w-full text-left hover:bg-black  hover:text-white rounded-lg transition duration-300">
                         <img src="{{ asset('images/settings.png') }}" width="24px" alt="Settings" class="inline-block mr-2">

@@ -27,7 +27,7 @@
             <div class="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800 text-center">
                 <i class="fa-solid fa-circle-exclamation text-gray-400 dark:text-gray-500 text-4xl mb-3"></i>
                 <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-400">Missing Tasks</h3>
-                <span class="text-3xl font-bold text-gray-900 dark:text-white">0</span>
+                <span class="text-3xl font-bold text-gray-900 dark:text-white">{{$missingTask}}</span>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">in month</p>
             </div>
         </div>

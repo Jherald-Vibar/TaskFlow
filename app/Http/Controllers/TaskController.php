@@ -7,6 +7,7 @@ use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\TaskProgress;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -191,4 +192,25 @@ class TaskController extends Controller
         return redirect()->route('user-task')->with('success', 'Task Progress Updated!');
     }
 
+    public function upcomingTaskPage(Request $request)
+    {
+        $title = "Upcoming Task";
+        $user = Auth::user();
+        $account = Account::where('user_id', $user->id)->first();
+        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
+        $today = Carbon::today();
+        $tomorrow = Carbon::tomorrow();
+
+
+        $selectedDate = $request->query('date', now()->toDateString());
+        $startOfWeek = $today->copy()->startOfWeek();
+        $weekDates = collect(range(0, 6))->mapWithKeys(fn ($i) => [
+            $startOfWeek->copy()->addDays($i)->format('D') => $startOfWeek->copy()->addDays($i)
+        ]);
+
+
+        $tasks = TaskModel::where('user_id', $user->id)->whereDate('due_date', $selectedDate)->paginate(5);
+
+        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories'));
+    }
 }

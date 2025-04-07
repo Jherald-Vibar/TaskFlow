@@ -45,6 +45,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::delete('task/{id}', [TaskController::class, 'deleteTask'])->name('deleteTask');
     Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
     Route::get('filter-task', [TaskController::class, 'filterTask'])->name('filterTask');
+    Route::get('/upcoming-task', [TaskController::class, 'upcomingTaskPage'])->name('upcomingTask');
 
     //Account Management
     Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
