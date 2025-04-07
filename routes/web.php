@@ -52,6 +52,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::get('account/settings', [UserController::class, 'viewAccount'])->name('accountSettings');
     Route::put('account/settings/update/{id}', [UserController::class, 'updateAccount'])->name('updateAccount');
     Route::put('account/settings/update-pass/{id}', [UserController::class, 'updatePassword'])->name('updatePassword');
+    Route::post('account/settings/add-pass/{id}', [UserController::class, 'addPassword'])->name('addPassword');
     Route::delete('user/{id}', [UserController::class, 'deleteAccount'])->name('deleteAccount');
     Route::get('task/category', [TaskController::class, 'categoryView'])->name('categoryView');
     Route::post('task/category', [TaskController::class, 'categoryStore'])->name('categoryStore');

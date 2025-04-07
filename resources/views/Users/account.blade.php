@@ -63,6 +63,7 @@
                     Edit Your Data
                 </button>
 
+                @if(!empty($user->password))
                 <!-- Change Password Button -->
                 <button type="button" onclick="openPasswordModal()"
                     class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">
@@ -73,7 +74,17 @@
                     </svg>
                     Change Password
                 </button>
-
+                @else
+                <button type="button" onclick="openAddPasswordModal()"
+                    class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">
+                    <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v1m-6-4V9a6 6 0 1 1 12 0v3m-6 6h.01M4 12h16">
+                        </path>
+                    </svg>
+                    Add Password
+                </button>
+                @endif
                 <!-- Delete Account Button (Now Below Edit Button) -->
                 <form action="{{ route('deleteAccount', ['id' => $user->id]) }}" method="POST" id="delete-form-{{ $user->id }}">
                     @csrf
@@ -184,6 +195,35 @@
                 </div>
             </div>
 
+            <div id="AddPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                    <h2 class="text-xl font-bold mb-4">Edit Account Details</h2>
+
+                    <form id="editAccountForm" action="{{route('addPassword', ['id' => $user->id])}}" method="POST" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">New Password</label>
+                            <input type="password" id="editPassword" name="new_password"  class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <input type="password" id="editPassword" name="new_password_confirmation"  class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+
+                        <div class="flex justify-end space-x-2">
+                            <button type="button" class="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600" onclick="closeAddPassModal()">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -235,6 +275,16 @@ document.addEventListener("DOMContentLoaded", function () {
     function openPasswordModal() {
         document.getElementById('editPasswordModal').classList.remove("hidden");
     }
+
+    function openAddPasswordModal() {
+        document.getElementById('AddPasswordModal').classList.remove("hidden");
+    }
+
+    function closeAddPassModal() {
+        document.getElementById('AddPasswordModal').classList.add("hidden");
+    }
+
+
 
     document.addEventListener("DOMContentLoaded", function() {
         @if(session('success'))

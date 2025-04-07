@@ -138,6 +138,26 @@ class UserController extends Controller
 
     }
 
+    public function addPassword(Request $request, $id) {
+        $user = User::findorFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'new_password' => ['required', 'min:8', 'confirmed'],
+
+        ]);
+
+        if($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return redirect()->back()->with('success', 'Password Added successfully.');
+
+    }
+
     public function deleteAccount($id) {
         $user = User::findorFail($id);
         if(!$user) {

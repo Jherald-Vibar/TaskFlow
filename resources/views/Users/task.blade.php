@@ -446,7 +446,6 @@
     }
 
     function closeProgressModal() {
-        // Close the modal
         const modal = document.getElementById('editProgressModal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
