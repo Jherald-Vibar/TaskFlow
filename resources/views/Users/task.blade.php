@@ -1,17 +1,35 @@
 @extends('Layouts.app')
 @section('content')
 <div class="sm:px-6 w-full">
-    <div class="px-4 md:px-10 py-4 md:py-7">
+    <div class="px-4 md:px-10 py-2 md:py-4">
         <div class="flex items-center justify-between">
             <p tabindex="0" class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">Tasks</p>
-            <div class="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
-                <p>Sort By:</p>
-                <select aria-label="select" class="focus:text-indigo-600 focus:outline-none bg-transparent ml-1">
-                    <option class="text-sm text-indigo-800">Latest</option>
-                    <option class="text-sm text-indigo-800">Oldest</option>
-                    <option class="text-sm text-indigo-800">Latest</option>
-                </select>
-            </div>
+            <form method="GET" action="{{ route('user-task') }}" class="w-full max-w-md mt-3 ml-auto">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white shadow-md p-4 rounded-2xl">
+                    <div class="flex flex-col w-full">
+                        <label for="filter-date" class="text-sm text-gray-600 mb-1">Filter by Date</label>
+                        <input
+                            type="date"
+                            name="filter_date"
+                            id="filter-date"
+                            value="{{ request('filter_date') }}"
+                            onchange="this.form.submit()"
+                            class="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                        >
+                    </div>
+                    <div class="flex flex-col w-full">
+                        <label for="sort" class="text-sm text-gray-600 mb-1">Sort By</label>
+                        <select
+                            name="sort"
+                            id="sort"
+                            onchange="this.form.submit()"
+                            class="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-white">
+                            <option value="latest" {{ request('sort', 'latest') == 'latest' ? 'selected' : '' }}>Latest</option>
+                            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <div class="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10">
@@ -42,7 +60,7 @@
                 <p class="text-sm font-medium leading-none text-white">Add Task</p>
             </button>
         </div>
-        <div class="mt-5 overflow-x-auto" id="task-list">
+        <div class="mt-5 overflow-x-auto rounded-lg" id="task-list">
             <table class="w-full whitespace-nowrap">
                 <thead>
                     <tr class="text-xs font-medium text-gray-600">
@@ -69,10 +87,13 @@
                             </div>
                         </td>
                         <td class="px-3 py-2">
-                            <div class="flex items-center">
+                            <div class="relative group flex items-center">
                                 <p class="text-sm font-medium leading-none text-gray-700 mr-2">
                                     {{ \Str::limit($task->task_name, 6) }}
                                 </p>
+                                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 whitespace-nowrap opacity-0 group-hover:opacity-100 transition duration-300">
+                                    {{ $task->task_name }}
+                                </span>
                             </div>
                         </td>
                         <td class="px-3 py-2">
@@ -87,8 +108,11 @@
                             </div>
                         </td>
                         <td class="px-3 py-2">
-                            <div class="flex items-center">
-                                <p class="text-xs leading-none text-gray-600">{{ $task->progress->progress_percentage }} %</p>
+                            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                                <div class="bg-green-500 h-full text-xs text-black text-center leading-4"
+                                     style="width: {{ $task->progress->progress_percentage }}%;">
+                                    {{ $task->progress->progress_percentage }}%
+                                </div>
                             </div>
                         </td>
                         <td class="px-3 py-2">

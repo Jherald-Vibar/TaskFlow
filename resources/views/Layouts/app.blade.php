@@ -87,25 +87,34 @@
         <div class="flex-1 flex flex-col ml-64">
 
             <!-- Navbar -->
-            <header class="bg-white p-4 shadow-md flex justify-between items-center">
-                <h1 class="text-xl font-bold">{{$title}}</h1>
-                <div class="flex items-center space-x-3">
-                    <form action="{{ route('searchTask') }}" method="GET" class="mb-4 flex items-center space-x-2">
-                        <input type="text" name="query" value="{{ request('query') }}"
-                               placeholder="Search tasks..."
-                               class="border p-2 rounded-lg flex-grow">
-                        <button class="bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white px-4 py-2 rounded-lg flex items-center justify-center">
-                            <img src="{{ asset('images/search.png') }}" alt="" class="w-5 h-5">
-                        </button>
-                    </form>
-                </div>
-                <div class="text-sm text-gray-600">
-                    <span id="current-date"></span>
+            <header class="bg-white p-3 shadow-md flex items-center justify-between space-x-6">
+                <h1 class="text-2xl sm:text-2xl font-bold text-gray-800 tracking-wide">{{ $title }}</h1>
+                <form action="{{ route('searchTask') }}" method="GET" class="flex items-center space-x-3 bg-gray-100 p-2 rounded-lg shadow-md">
+                    <input type="text" name="query" value="{{ request('query') }}"
+                           placeholder="Search tasks..."
+                           class="border border-gray-300 p-2 rounded-lg w-72 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200">
+                    <button type="submit" class="bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <img src="{{ asset('images/search.png') }}" alt="Search" class="w-5 h-5">
+                    </button>
+                </form>
+                <div class="text-sm text-gray-600 flex flex-col items-center space-y-2">
+                    <div class="flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2V6M18 2V6M6 6H18M4 6V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V6H4V6Z" />
+                        </svg>
+                        <span id="current-date" class="block text-gray-800 text-xs sm:text-sm font-medium">{{ now('Asia/Manila')->format('l, F j, Y') }}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V12L16 14M12 6C9.23858 6 7 8.23858 7 11C7 13.7614 9.23858 16 12 16C14.7614 16 17 13.7614 17 11C17 8.23858 14.7614 6 12 6ZM12 11V6C12 5.44772 11.5523 5 11 5C10.4477 5 10 5.44772 10 6V11C10 11.5523 10.4477 12 11 12H12C12.5523 12 13 11.5523 13 11C13 10.4477 12.5523 10 12 10H11C10.4477 10 10 9.55228 10 9H12C12.5523 9 13 9.55228 13 10H14C14.4477 10 15 9.55228 15 9H16C16.4477 9 17 9.55228 17 10H16C15.4477 10 15 9.55228 15 9H14Z" />
+                        </svg>
+                        <span id="current-time" class="block text-indigo-600 text-xs sm:text-sm font-semibold">{{ now('Asia/Manila')->format('h:i A') }}</span>
+                    </div>
                 </div>
             </header>
 
            <!-- Main -->
-            <main class="flex-1 p-6 bg-gray-50">
+            <main class="flex-1 p-3 bg-gray-50">
                 @yield('content')
             </main>
         </div>
