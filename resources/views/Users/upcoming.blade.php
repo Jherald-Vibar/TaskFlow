@@ -2,7 +2,7 @@
 @section('content')
 
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-7 gap-2 text-sm text-gray-600 border-b pb-3 mb-6">
         @foreach($weekDates as $day => $date)
             @php

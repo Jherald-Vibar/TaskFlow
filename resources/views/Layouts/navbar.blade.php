@@ -1,6 +1,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <nav class="bg-gradient-to-r from-red-500 via-red-600 to-red-700">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <div class="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="{{ route('homepage') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="{{ asset('images/logo.png') }}" class="h-8" alt="Flowbite Logo" />
             <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">TaskFlow</span>

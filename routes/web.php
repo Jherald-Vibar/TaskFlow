@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::get('search-task', [TaskController::class, 'searchTask'])->name('searchTask');
     Route::get('filter-task', [TaskController::class, 'filterTask'])->name('filterTask');
     Route::get('/upcoming-task', [TaskController::class, 'upcomingTaskPage'])->name('upcomingTask');
+    Route::get('/today-task', [TaskController::class, 'todayPage'])->name('today');
 
     //Account Management
     Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');

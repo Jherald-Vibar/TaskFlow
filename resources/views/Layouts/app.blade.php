@@ -42,7 +42,7 @@
                     <img src="{{ asset('images/task.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
                         <span class="text-sm font-medium">My Task</span>
                 </a>
-                <a href="#" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+                <a href="{{route('today')}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
                     <img src="{{ asset('images/today.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
                     <span class="text-sm font-medium">Today</span>
                 </a>
@@ -108,19 +108,16 @@
                         </svg>
                         <span id="current-date" class="block text-gray-800 text-xs sm:text-sm font-medium">{{ now('Asia/Manila')->format('l, F j, Y') }}</span>
                     </div>
-                    <div class="flex items-center space-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V12L16 14M12 6C9.23858 6 7 8.23858 7 11C7 13.7614 9.23858 16 12 16C14.7614 16 17 13.7614 17 11C17 8.23858 14.7614 6 12 6ZM12 11V6C12 5.44772 11.5523 5 11 5C10.4477 5 10 5.44772 10 6V11C10 11.5523 10.4477 12 11 12H12C12.5523 12 13 11.5523 13 11C13 10.4477 12.5523 10 12 10H11C10.4477 10 10 9.55228 10 9H12C12.5523 9 13 9.55228 13 10H14C14.4477 10 15 9.55228 15 9H16C16.4477 9 17 9.55228 17 10H16C15.4477 10 15 9.55228 15 9H14Z" />
-                        </svg>
-                        <span id="current-time" class="block text-indigo-600 text-xs sm:text-sm font-semibold">{{ now('Asia/Manila')->format('h:i A') }}</span>
-                    </div>
+                    <span id="current-time" class="block text-indigo-600 text-xs sm:text-sm font-semibold">
+                        --
+                    </span>
                 </div>
             </header>
 
            <!-- Main -->
-            <main class="flex-1 p-3 bg-gray-50">
-                @yield('content')
-            </main>
+           <main class="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 bg-gray-50">
+            @yield('content')
+        </main>
         </div>
     </div>
 
@@ -134,6 +131,23 @@
         }
 
         displayCurrentDate();
+
+
+        function updateTime() {
+        const now = new Date();
+        const options = {
+            timeZone: 'Asia/Manila',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        };
+
+        const timeString = now.toLocaleTimeString('en-US', options);
+        document.getElementById('current-time').textContent = timeString;
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>

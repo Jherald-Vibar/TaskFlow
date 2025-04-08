@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\TaskProgress;
+use App\Rules\TimeFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ class TaskController extends Controller
             'taskName'    => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date'    => 'required|date',
+            'due_time' => ['nullable', new TimeFormat],
             'priority'    => 'required|in:Low,Medium,High',
             'category_id' => 'nullable|exists:task_categories,id',
         ]);
@@ -26,10 +28,14 @@ class TaskController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
+        $dueTime = $request->due_time ? \Carbon\Carbon::createFromFormat('H:i', $request->due_time)->format('H:i:s') : null;
+
         $task = TaskModel::create([
             'task_name'   => $request->taskName,
             'description' => $request->description,
             'due_date'    => $request->due_date,
+            'due_time' => $dueTime,
             'priority'    => $request->priority,
             'user_id'     => $user->id,
             'category_id' => $request->category_id ?: null,
@@ -51,6 +57,7 @@ class TaskController extends Controller
             'taskName'    => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date'    => 'required|date',
+            'due_time' => ['nullable', new TimeFormat],
             'priority'    => 'required|in:Low,Medium,High',
             'category_id' => 'nullable|exists:task_categories,id',
             'progress_percentage' => 'nullable|integer|min:0|max:100',
@@ -62,16 +69,20 @@ class TaskController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+
         $task = TaskModel::where('id', $id)->where('user_id', $user->id)->first();
 
         if (!$task) {
             return redirect()->back()->with('error', 'Task not found or unauthorized.');
         }
 
+        $dueTime = $request->due_time ?: $task->due_time;
+
         $task->update([
             'task_name'   => $request->taskName,
             'description' => $request->description,
             'due_date'    => $request->due_date,
+            'due_time'    => $dueTime,
             'priority'    => $request->priority,
             'category_id' => $request->category_id ?: null,
         ]);
@@ -189,6 +200,8 @@ class TaskController extends Controller
             ]
         );
 
+        $task->touch();
+
         return redirect()->route('user-task')->with('success', 'Task Progress Updated!');
     }
 
@@ -212,5 +225,23 @@ class TaskController extends Controller
         $tasks = TaskModel::where('user_id', $user->id)->whereDate('due_date', $selectedDate)->paginate(5);
 
         return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories'));
+    }
+
+    public function todayPage() {
+        $title = "Today Task";
+        $user = Auth::user();
+        $account = Account::where('user_id', $user->id)->first();
+        $tasks = TaskModel::where('user_id', $user->id)->where('due_date', '=', Carbon::today())->with('progress')->get();
+
+
+        $groupedTasks = $tasks->groupBy(function ($tasks){
+            return $tasks->progress->status;
+        });
+
+        $missingTasks = TaskModel::where('due_time', '<', Carbon::now())->where('due_date', '=', Carbon::today())->whereHas('progress', function($query) {
+            $query->whereIn('status', ['Pending', 'Ongoing']);
+        })->where('user_id', $user->id)->get();
+
+        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks'));
     }
 }

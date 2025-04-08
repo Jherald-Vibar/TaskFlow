@@ -11,7 +11,7 @@ class TaskModel extends Model
 
     protected $table = 'tasks';
 
-    protected $fillable = ['user_id', 'task_name', 'description', 'category_id', 'priority', 'due_date'];
+    protected $fillable = ['user_id', 'task_name', 'description', 'category_id', 'priority', 'due_date', 'due_time'];
 
     public function user()
     {
