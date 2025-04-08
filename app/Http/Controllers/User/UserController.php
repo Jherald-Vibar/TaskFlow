@@ -99,10 +99,11 @@ class UserController extends Controller
         if (!empty($taskIds)) {
             $completedTask = TaskProgress::whereIn('task_id', $taskIds)->where('status', 'Completed')->count();
         }
-        $missingTask = $tasks->filter(function ($task) {
-            return $task->due_date < Carbon::now() &&
-                   (!$task->progress || $task->progress->status !== 'Completed');
-        })->count();
+        
+        $missingTask = TaskModel::where('due_time', '<', Carbon::now())->where('due_date', '=', Carbon::today())->whereHas('progress', function($query) {
+            $query->whereIn('status', ['Pending', 'Ongoing']);
+        })->where('user_id', $user->id)->count();
+
         return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask'));
     }
 
