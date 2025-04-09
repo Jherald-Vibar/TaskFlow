@@ -99,11 +99,14 @@ class UserController extends Controller
         if (!empty($taskIds)) {
             $completedTask = TaskProgress::whereIn('task_id', $taskIds)->where('status', 'Completed')->count();
         }
-        $missingTask = $tasks->filter(function ($task) {
-            return $task->due_date < Carbon::now() &&
-                   (!$task->progress || $task->progress->status !== 'Completed');
-        })->count();
-        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask'));
+        $missingTasks = TaskModel::where(function ($query) {
+            $query->whereDate('due_date', '<', now())
+            ->orWhere(function ($subQuery){
+                $subQuery->whereDate('due_date', now())->whereTime('due_time', '<', now());
+            });
+        })->where('user_id', $user->id)->count();
+
+        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTasks'));
     }
 
     public function updateAccount(Request $request, $id) {
@@ -194,6 +197,14 @@ class UserController extends Controller
         }
         $user->delete();
         return redirect()->route('loginForm')->with('success', 'Account Deleted 😞');
+    }
+
+
+    public function dashboard() {
+        $user = Auth::user();
+        $title = "Dashboard";
+        $account = Account::where('user_id', $user->id)->first();
+        return view('users.dashboard', compact('user', 'account' , 'title'));
     }
 
 }

@@ -38,6 +38,9 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     //Home-Today
     Route::get('task/', [UserController::class, 'taskPage'])->name('user-task');
 
+    //Dashboard
+    Route::get('dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
     //Task Management
     Route::post('task', [TaskController::class, 'taskStore'])->name('task.store');
     Route::put('task/{id}', [TaskController::class, 'updateTask'])->name('updateTask');

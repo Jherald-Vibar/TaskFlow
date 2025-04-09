@@ -214,6 +214,18 @@ class TaskController extends Controller
         $today = Carbon::today();
         $tomorrow = Carbon::tomorrow();
 
+        $missingTasks = TaskModel::where(function($query) {
+            $query->whereDate('due_date', '<', now())
+                  ->orWhere(function($subQuery) {
+                      $subQuery->whereDate('due_date', now())
+                               ->whereTime('due_time', '<', Carbon::now());
+                  });
+        })
+        ->whereHas('progress', function($query) {
+            $query->whereIn('status', ['Pending', 'Ongoing']);
+        })
+        ->where('user_id', $user->id)
+        ->get();
 
         $selectedDate = $request->query('date', now()->toDateString());
         $startOfWeek = $today->copy()->startOfWeek();
@@ -224,7 +236,7 @@ class TaskController extends Controller
 
         $tasks = TaskModel::where('user_id', $user->id)->whereDate('due_date', $selectedDate)->paginate(5);
 
-        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories'));
+        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories', 'missingTasks'));
     }
 
     public function todayPage() {

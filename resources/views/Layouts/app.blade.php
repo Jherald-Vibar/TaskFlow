@@ -33,8 +33,8 @@
                 </div>
             </div>
             <!-- Navigation Links -->
-            <nav class="flex-1 space-y-4">
-                <a href="#" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+            <nav class="flex-1 space-y-4 md:space-y-1">
+                <a href="{{route('dashboard')}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
                     <img src="{{ asset('images/dashboard.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
                     <span class="text-sm font-medium">Dashboard</span>
                 </a>

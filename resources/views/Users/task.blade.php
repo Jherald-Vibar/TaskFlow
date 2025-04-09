@@ -386,7 +386,7 @@
                 </svg>
             </button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-gray-50 rounded-xl p-4 shadow-md">
                 <label class="flex items-center font-medium text-gray-600 mb-2">
                     <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
