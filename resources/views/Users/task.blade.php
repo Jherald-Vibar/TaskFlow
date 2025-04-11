@@ -211,7 +211,7 @@
 </div>
 
  <!--Add New TaskFlow Task-->
-<div id="taskModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out">
+ <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out">
     <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-800">Add New Task</h2>
@@ -221,7 +221,8 @@
                 </svg>
             </button>
         </div>
-        <form id="taskForm" action="{{ route('task.store') }}" method="POST">
+
+        <form id="taskForm" action="{{ route('task.store') }}" method="POST" x-data="{ loading: false }" @submit="loading = true">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
@@ -246,7 +247,7 @@
                     <select id="taskCategory" name="category_id" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm">
                         <option value="" disabled selected>Select Category</option>
                         @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                            <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -264,7 +265,18 @@
 
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Create Task</button>
+
+                <button
+                    type="submit"
+                    :disabled="loading"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <svg x-show="loading" x-transition class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                    </svg>
+                    <span x-text="loading ? 'Creating...' : 'Create Task'"></span>
+                </button>
             </div>
         </form>
     </div>
@@ -474,6 +486,7 @@
         display: block;
     }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function dropdownFunction(element) {
@@ -596,7 +609,6 @@
         document.getElementById('viewTaskProgressText').textContent = `${progress}%`;
         document.getElementById('viewModal').classList.remove('hidden');
 
-
         const clampedProgress = Math.min(Math.max(progress, 0), 100);
         document.getElementById('progressCircle').style.background = `conic-gradient(#a72525 ${clampedProgress}%, #e5e7eb ${clampedProgress}%)`;
         document.getElementById('progressValue').textContent = `${clampedProgress}%`;
@@ -604,9 +616,5 @@
         function closeViewModal() {
             document.getElementById('viewModal').classList.add('hidden');
         }
-
-
-
-
 </script>
 @endsection

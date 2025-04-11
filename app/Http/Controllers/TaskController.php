@@ -10,17 +10,20 @@ use App\Rules\TimeFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    public function taskStore(Request $request) {
+    public function taskStore(Request $request)
+    {
         $user = Auth::user();
+
         $validator = Validator::make($request->all(), [
             'taskName'    => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date'    => 'required|date',
-            'due_time' => ['nullable', new TimeFormat],
+            'due_time'    => ['nullable', new TimeFormat],
             'priority'    => 'required|in:Low,Medium,High',
             'category_id' => 'nullable|exists:task_categories,id',
         ]);
@@ -29,23 +32,30 @@ class TaskController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $dueTime = $request->due_time ? \Carbon\Carbon::createFromFormat('H:i', $request->due_time)->format('H:i:s') : null;
+        $dueTime = $request->due_time
+            ? \Carbon\Carbon::createFromFormat('H:i', $request->due_time)->format('H:i:s')
+            : null;
 
         $task = TaskModel::create([
             'task_name'   => $request->taskName,
             'description' => $request->description,
             'due_date'    => $request->due_date,
-            'due_time' => $dueTime,
+            'due_time'    => $dueTime,
             'priority'    => $request->priority,
             'user_id'     => $user->id,
-            'category_id' => $request->category_id ?: null,
+            'category_id' => $request->category_id,
         ]);
 
         TaskProgress::create([
-            'task_id' => $task->id,
+            'task_id'             => $task->id,
             'progress_percentage' => 0,
-            'status'  => 'Pending',
+            'status'              => 'Pending',
         ]);
+
+        Mail::send('emails.task-email', ['task' => $task, 'user' => $user], function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('📝 New Task Created');
+        });
 
         return redirect()->route('user-task')->with('success', 'Task Created Successfully!');
     }
