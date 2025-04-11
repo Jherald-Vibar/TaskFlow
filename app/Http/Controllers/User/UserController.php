@@ -208,6 +208,7 @@ class UserController extends Controller
         $filterRange = $request->input('range', 'today');
         $tasks = TaskModel::with('progress')->whereHas('progress')->where('user_id', $user->id)->get();
 
+        $taskss = TaskModel::with('progress')->whereHas('progress')->where('user_id', $user->id)->paginate(5);
         $totalTask = $tasks->count();
 
         $tasksInWeek = $tasks->filter(function ($task) {
@@ -322,7 +323,7 @@ class UserController extends Controller
 
 
 
-        return view('Users.dashboard', compact('user', 'account' , 'title', 'tasks', 'groupedTasks', 'tasksProgress', 'taskFiltered', 'filterLabel', 'changePercent'));
+        return view('Users.dashboard', compact('user', 'account' , 'title', 'tasks', 'taskss', 'groupedTasks', 'tasksProgress', 'taskFiltered', 'filterLabel', 'changePercent'));
     }
 
 }

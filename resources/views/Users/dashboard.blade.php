@@ -14,7 +14,8 @@
                     <h2 class="text-xl font-bold text-gray-800">📅 To-Do</h2>
                     <a href="#" class="text-sm text-indigo-600 hover:underline">+ Add Task</a>
                 </div>
-                @foreach($tasks as $task)
+
+                @foreach($taskss as $task)
                     <div class="bg-white rounded-2xl shadow p-4 flex flex-col md:flex-row justify-between items-start gap-4">
                         <div class="flex-1">
                             <h3 class="font-semibold text-lg text-gray-900">{{ $task->task_name }}</h3>
@@ -30,6 +31,9 @@
                         @endif
                     </div>
                 @endforeach
+                <div class="mt-6">
+                    {{ $taskss->links() }}
+                </div>
             </div>
         </div>
         <div class="space-y-6">
