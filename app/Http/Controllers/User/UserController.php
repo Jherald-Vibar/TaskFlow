@@ -200,11 +200,129 @@ class UserController extends Controller
     }
 
 
-    public function dashboard() {
+    public function dashboard(Request $request) {
+        $filterLabel = "day";
         $user = Auth::user();
         $title = "Dashboard";
         $account = Account::where('user_id', $user->id)->first();
-        return view('users.dashboard', compact('user', 'account' , 'title'));
+        $filterRange = $request->input('range', 'today');
+        $tasks = TaskModel::with('progress')->whereHas('progress')->where('user_id', $user->id)->get();
+
+        $totalTask = $tasks->count();
+
+        $tasksInWeek = $tasks->filter(function ($task) {
+            return \Carbon\Carbon::parse($task->created_at)->isToday() || \Carbon\Carbon::parse($task->created_at)->isCurrentWeek();
+        })->count();
+
+        $tasksInMonth = $tasks->filter(function ($task) {
+            return \Carbon\Carbon::parse($task->created_at)->isToday() || \Carbon\Carbon::parse($task->created_at)->isCurrentMonth();
+        })->count();
+
+        $tasksIn60Days = $tasks->filter(function ($task){
+            return \Carbon\Carbon::parse($task->created_at)->gt(now()->subDays(60));
+        })->count();
+
+        $tasksIn90Days = $tasks->filter(function ($task){
+            return \Carbon\Carbon::parse($task->created_at)->gt(now()->subDays(90));
+        })->count();
+
+        $groupedTasks = [
+            'Completed' => $tasks->filter(fn ($task) => $task->progress && $task->progress->status === 'Completed')->count(),
+            'Ongoing' => $tasks->filter(fn ($task) => $task->progress && $task->progress->status === 'Ongoing')->count(),
+            'Pending' => $tasks->filter(fn ($task) => $task->progress && $task->progress->status === 'Pending')->count(),
+            'Total' => $totalTask,
+        ];
+
+        $tasksProgress = [
+            'Mon' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isMonday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+
+            'Tue' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isTuesday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+
+            'Wed' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isWednesday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+
+            'Thurs' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isThursday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+
+            'Fri' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isFriday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+
+            'Sat' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isSaturday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+
+            'Sun' => $tasks->filter(fn ($task) =>
+                $task->progress && $task->progress->status === 'Completed' &&
+                Carbon::parse($task->created_at)->isSunday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek()
+            )->count(),
+        ];
+
+        $taskFiltered = '';
+
+        if($filterRange == 'today') {
+            $filterLabel = "day";
+            $taskFiltered = $tasks->filter(function ($task) {
+                return Carbon::parse($task->created_at)->today() &&
+                Carbon::parse($task->created_at)->isCurrentWeek();
+            })->count();
+        }
+        elseif($filterRange == 'yesterday') {
+            $filterLabel = "yesterday";
+            $taskFiltered = $tasks->filter(function ($task) {
+                return Carbon::parse($task->created_at)->isYesterday() &&
+                Carbon::parse($task->created_at)->isCurrentWeek();
+            })->count();
+        }
+        elseif($filterRange == '7days') {
+            $filterLabel = "week";
+            $taskFiltered = $tasksInWeek;
+        } elseif($filterRange == '30days') {
+            $filterLabel = "30 Days";
+            $taskFiltered = $tasksInMonth;
+        } elseif($filterRange == '60days') {
+            $filterLabel = "60 Days";
+            $taskFiltered = $tasksIn60Days;
+        } elseif($filterRange == '90days') {
+            $filterLabel = "90 Days";
+            $taskFiltered = $tasksIn90Days;
+        }
+
+
+        $lastWeekTask = $tasks->filter(function ($task) {
+            return \Carbon\Carbon::parse($task->created_at)->isLastWeek();
+        })->count();
+
+
+        if($lastWeekTask > 0) {
+            $changePercent = (($tasksInWeek - $lastWeekTask) / $lastWeekTask) * 100;
+        } else {
+            $changePercent = $tasksInWeek > 0 ? 100 : 0;
+        }
+
+
+
+
+        return view('Users.dashboard', compact('user', 'account' , 'title', 'tasks', 'groupedTasks', 'tasksProgress', 'taskFiltered', 'filterLabel', 'changePercent'));
     }
 
 }
