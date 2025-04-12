@@ -33,8 +33,8 @@
                 </div>
             </div>
             <!-- Navigation Links -->
-            <nav class="flex-1 space-y-4">
-                <a href="#" class="block p-3 rounded-lg hover:bg-black hover:text-white">
+            <nav class="flex-1 space-y-4 md:space-y-1">
+                <a href="{{route('dashboard')}}" class="block p-3 rounded-lg hover:bg-black hover:text-white">
                     <img src="{{ asset('images/dashboard.png') }}" width="24px" alt="Settings" class="inline-block mr-2">
                     <span class="text-sm font-medium">Dashboard</span>
                 </a>
@@ -93,6 +93,7 @@
             <!-- Navbar -->
             <header class="bg-white p-3 shadow-md flex items-center justify-between space-x-6">
                 <h1 class="text-2xl sm:text-2xl font-bold text-gray-800 tracking-wide">{{ $title }}</h1>
+
                 <form action="{{ route('searchTask') }}" method="GET" class="flex items-center space-x-3 bg-gray-100 p-2 rounded-lg shadow-md">
                     <input type="text" name="query" value="{{ request('query') }}"
                            placeholder="Search tasks..."
@@ -101,7 +102,37 @@
                         <img src="{{ asset('images/search.png') }}" alt="Search" class="w-5 h-5">
                     </button>
                 </form>
-                <div class="text-sm text-gray-600 flex flex-col items-center space-y-2">
+
+                <!-- Notification Dropdown -->
+                <div class="relative">
+                    <button class="text-gray-600" id="notification-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 10c0 1.104-.896 2-2 2H8c-1.104 0-2-.896-2-2V6c0-1.104.896-2 2-2h8c1.104 0 2 .896 2 2v4zM12 14c2.21 0 4 1.79 4 4v2h-8v-2c0-2.21 1.79-4 4-4z"/>
+                        </svg>
+                    </button>
+                    <!-- Dropdown Modal -->
+                    <div class="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-lg overflow-hidden hidden" id="notification-dropdown">
+                        <div class="p-4 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Task Notifications</h3>
+                        </div>
+                        <div class="max-h-60 overflow-y-auto p-2 space-y-2">
+                            @forelse ($tasks as $task)
+                                <div class="p-2 flex items-start justify-between bg-gray-50 border border-gray-200 rounded-md">
+                                    <div class="text-sm text-gray-600">
+                                        <strong>Task Created:</strong> {{ $task->task_name }}
+                                        <br>
+                                        <span class="text-xs text-gray-500">Due: {{ $task->due_date }}</span>
+                                    </div>
+                                    <button class="ml-2 text-gray-400 hover:text-gray-600 text-sm" onclick="this.parentElement.remove()">X</button>
+                                </div>
+                            @empty
+                                <div class="text-sm text-gray-500 text-center">No new tasks.</div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                </div>
+                <div class="flex flex-col items-center space-y-2">
                     <div class="flex items-center space-x-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2V6M18 2V6M6 6H18M4 6V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V6H4V6Z" />
@@ -122,6 +153,11 @@
     </div>
 
     <script>
+
+        document.getElementById('notification-button').addEventListener('click', function() {
+            const dropdown = document.getElementById('notification-dropdown');
+            dropdown.classList.toggle('hidden');
+        });
 
         function displayCurrentDate() {
             const today = new Date();

@@ -10,17 +10,20 @@ use App\Rules\TimeFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    public function taskStore(Request $request) {
+    public function taskStore(Request $request)
+    {
         $user = Auth::user();
+
         $validator = Validator::make($request->all(), [
             'taskName'    => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date'    => 'required|date',
-            'due_time' => ['nullable', new TimeFormat],
+            'due_time'    => ['nullable', new TimeFormat],
             'priority'    => 'required|in:Low,Medium,High',
             'category_id' => 'nullable|exists:task_categories,id',
         ]);
@@ -29,23 +32,30 @@ class TaskController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $dueTime = $request->due_time ? \Carbon\Carbon::createFromFormat('H:i', $request->due_time)->format('H:i:s') : null;
+        $dueTime = $request->due_time
+            ? \Carbon\Carbon::createFromFormat('H:i', $request->due_time)->format('H:i:s')
+            : null;
 
         $task = TaskModel::create([
             'task_name'   => $request->taskName,
             'description' => $request->description,
             'due_date'    => $request->due_date,
-            'due_time' => $dueTime,
+            'due_time'    => $dueTime,
             'priority'    => $request->priority,
             'user_id'     => $user->id,
-            'category_id' => $request->category_id ?: null,
+            'category_id' => $request->category_id,
         ]);
 
         TaskProgress::create([
-            'task_id' => $task->id,
+            'task_id'             => $task->id,
             'progress_percentage' => 0,
-            'status'  => 'Pending',
+            'status'              => 'Pending',
         ]);
+
+        Mail::send('emails.task-email', ['task' => $task, 'user' => $user], function ($message) use ($user) {
+        $message->to($user->email)
+            ->subject('📝 New Task Created');
+        });
 
         return redirect()->route('user-task')->with('success', 'Task Created Successfully!');
     }
@@ -128,8 +138,9 @@ class TaskController extends Controller
         $user = Auth::user();
         $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $account = Account::where('user_id', $user->id)->first();
+        $tasks = TaskModel::where('user_id', $user->id)->whereHas('progress')->get();
 
-        return view('Users.category',compact('user', 'account', 'title', 'categories'));
+        return view('Users.category',compact('user', 'account', 'title', 'categories', 'tasks'));
     }
 
     public function categoryStore(Request $request) {
@@ -214,6 +225,18 @@ class TaskController extends Controller
         $today = Carbon::today();
         $tomorrow = Carbon::tomorrow();
 
+        $missingTasks = TaskModel::where(function($query) {
+            $query->whereDate('due_date', '<', now())
+                  ->orWhere(function($subQuery) {
+                      $subQuery->whereDate('due_date', now())
+                               ->whereTime('due_time', '<', Carbon::now());
+                  });
+        })
+        ->whereHas('progress', function($query) {
+            $query->whereIn('status', ['Pending', 'Ongoing']);
+        })
+        ->where('user_id', $user->id)
+        ->get();
 
         $selectedDate = $request->query('date', now()->toDateString());
         $startOfWeek = $today->copy()->startOfWeek();
@@ -224,7 +247,7 @@ class TaskController extends Controller
 
         $tasks = TaskModel::where('user_id', $user->id)->whereDate('due_date', $selectedDate)->paginate(5);
 
-        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories'));
+        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories', 'missingTasks'));
     }
 
     public function todayPage() {
@@ -242,6 +265,6 @@ class TaskController extends Controller
             $query->whereIn('status', ['Pending', 'Ongoing']);
         })->where('user_id', $user->id)->get();
 
-        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks'));
+        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks', 'tasks'));
     }
 }

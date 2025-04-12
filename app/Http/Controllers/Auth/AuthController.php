@@ -18,7 +18,17 @@ use Illuminate\Support\Str;
 class AuthController extends Controller
 {
     public function register() {
-        return view("Auth.register");
+
+        if(Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        return response()
+        ->view('Auth.register')
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+
     }
 
     public function store(Request $request) {
@@ -83,7 +93,16 @@ class AuthController extends Controller
     }
 
     public function login() {
-        return view('Auth.login');
+
+        if(Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        return response()
+        ->view('Auth.login')
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
     }
 
     public function authenticate(Request $request) {
@@ -118,7 +137,7 @@ class AuthController extends Controller
     }
 
     public function forgotPassword() {
-        return view('Auth.forget-password');
+        return view('Auth.forgot-password');
     }
 
     public function forgotPasswordPost(Request $request) {
