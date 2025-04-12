@@ -53,8 +53,8 @@ class TaskController extends Controller
         ]);
 
         Mail::send('emails.task-email', ['task' => $task, 'user' => $user], function ($message) use ($user) {
-            $message->to($user->email)
-                    ->subject('📝 New Task Created');
+        $message->to($user->email)
+            ->subject('📝 New Task Created');
         });
 
         return redirect()->route('user-task')->with('success', 'Task Created Successfully!');
@@ -138,8 +138,9 @@ class TaskController extends Controller
         $user = Auth::user();
         $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $account = Account::where('user_id', $user->id)->first();
+        $tasks = TaskModel::where('user_id', $user->id)->whereHas('progress')->get();
 
-        return view('Users.category',compact('user', 'account', 'title', 'categories'));
+        return view('Users.category',compact('user', 'account', 'title', 'categories', 'tasks'));
     }
 
     public function categoryStore(Request $request) {
@@ -264,6 +265,6 @@ class TaskController extends Controller
             $query->whereIn('status', ['Pending', 'Ongoing']);
         })->where('user_id', $user->id)->get();
 
-        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks'));
+        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks', 'tasks'));
     }
 }
