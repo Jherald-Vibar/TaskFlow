@@ -99,14 +99,14 @@ class UserController extends Controller
         if (!empty($taskIds)) {
             $completedTask = TaskProgress::whereIn('task_id', $taskIds)->where('status', 'Completed')->count();
         }
-<<<<<<< HEAD
-        
+
+
         $missingTask = TaskModel::where('due_time', '<', Carbon::now())->where('due_date', '=', Carbon::today())->whereHas('progress', function($query) {
             $query->whereIn('status', ['Pending', 'Ongoing']);
         })->where('user_id', $user->id)->count();
 
         return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask'));
-=======
+
         $missingTasks = TaskModel::where(function ($query) {
             $query->whereDate('due_date', '<', now())
             ->orWhere(function ($subQuery){
@@ -115,7 +115,7 @@ class UserController extends Controller
         })->where('user_id', $user->id)->count();
 
         return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTasks'));
->>>>>>> TTDL-27-View-Task-Analytics
+
     }
 
     public function updateAccount(Request $request, $id) {
