@@ -8,6 +8,7 @@ use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\TaskProgress;
 use App\Models\User;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +50,11 @@ class UserController extends Controller
                 'priority' => $priority,
             ]);
 
-        return view('Users.task', compact('account', 'tasks','user','title', 'categories','sort','filterDate','priority'));
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+        return view('Users.task', compact('account', 'tasks','user','title', 'categories','sort','filterDate','priority' ,'notifications', 'unreadCount'));
     }
 
     public function createForm($id) {
@@ -99,14 +104,18 @@ class UserController extends Controller
         if (!empty($taskIds)) {
             $completedTask = TaskProgress::whereIn('task_id', $taskIds)->where('status', 'Completed')->count();
         }
-<<<<<<< HEAD
-        
+
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+
         $missingTask = TaskModel::where('due_time', '<', Carbon::now())->where('due_date', '=', Carbon::today())->whereHas('progress', function($query) {
             $query->whereIn('status', ['Pending', 'Ongoing']);
         })->where('user_id', $user->id)->count();
 
-        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask'));
-=======
+        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask', 'notifications', 'unreadCount'));
+
         $missingTasks = TaskModel::where(function ($query) {
             $query->whereDate('due_date', '<', now())
             ->orWhere(function ($subQuery){
@@ -114,8 +123,7 @@ class UserController extends Controller
             });
         })->where('user_id', $user->id)->count();
 
-        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTasks'));
->>>>>>> TTDL-27-View-Task-Analytics
+        return view('Users.account', compact('account', 'user' ,'tasks', 'title', 'completedTask', 'missingTask'));
     }
 
     public function updateAccount(Request $request, $id) {
@@ -329,10 +337,12 @@ class UserController extends Controller
             $changePercent = $tasksInWeek > 0 ? 100 : 0;
         }
 
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
 
 
-
-        return view('Users.dashboard', compact('user', 'account' , 'title', 'tasks', 'taskss', 'groupedTasks', 'tasksProgress', 'taskFiltered', 'filterLabel', 'changePercent'));
+        return view('Users.dashboard', compact('user', 'account' , 'title', 'tasks', 'taskss', 'groupedTasks', 'tasksProgress', 'taskFiltered', 'filterLabel', 'changePercent', 'notifications', 'unreadCount'));
     }
 
 }

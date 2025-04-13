@@ -61,6 +61,10 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::delete('user/{id}', [UserController::class, 'deleteAccount'])->name('deleteAccount');
     Route::get('task/category', [TaskController::class, 'categoryView'])->name('categoryView');
     Route::post('task/category', [TaskController::class, 'categoryStore'])->name('categoryStore');
+
+    //Notification Mark As Read
+    Route::patch('/notifications/mark-all-read', [TaskController::class, 'markAsRead']);
+    Route::patch('/notification/{id}/mark-read', [TaskController::class, 'markSingleRead'])->name('markSingleRead');
 });
 
 

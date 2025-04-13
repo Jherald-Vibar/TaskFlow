@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{config('app.name')}}</title>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -103,34 +104,64 @@
                     </button>
                 </form>
 
-                <!-- Notification Dropdown -->
                 <div class="relative">
-                    <button class="text-gray-600" id="notification-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 10c0 1.104-.896 2-2 2H8c-1.104 0-2-.896-2-2V6c0-1.104.896-2 2-2h8c1.104 0 2 .896 2 2v4zM12 14c2.21 0 4 1.79 4 4v2h-8v-2c0-2.21 1.79-4 4-4z"/>
+                    @if($unreadCount > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                            {{ $unreadCount }}
+                        </span>
+                    @endif
+
+                    <button class="text-gray-600" id="notification-button" onclick="toggleDropdown();">
+                        {{-- Bell Icon --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                  d="M4 19v-2h2v-7q0-2.075 1.25-3.687T10.5 4.2V2h3v2.2q2 .5 3.25 2.113T18 10v7h2v2zm8 3q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22"/>
                         </svg>
                     </button>
-                    <!-- Dropdown Modal -->
+
                     <div class="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded-lg overflow-hidden hidden" id="notification-dropdown">
                         <div class="p-4 border-b">
                             <h3 class="text-lg font-semibold text-gray-800">Task Notifications</h3>
                         </div>
+
                         <div class="max-h-60 overflow-y-auto p-2 space-y-2">
-                            @forelse ($tasks as $task)
+                            @forelse ($notifications as $notif)
                                 <div class="p-2 flex items-start justify-between bg-gray-50 border border-gray-200 rounded-md">
                                     <div class="text-sm text-gray-600">
-                                        <strong>Task Created:</strong> {{ $task->task_name }}
+                                        <strong>Task Created:</strong> {{ $notif->task->task_name }}
                                         <br>
-                                        <span class="text-xs text-gray-500">Due: {{ $task->due_date }}</span>
+                                        <span class="text-xs text-gray-500">Due: {{ $notif->task->due_date }}</span>
+                                        <span class="text-xs text-gray-500">Created {{ $notif->task->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <button class="ml-2 text-gray-400 hover:text-gray-600 text-sm" onclick="this.parentElement.remove()">X</button>
+                                    <div class="flex items-center space-x-2">
+                                        @if($notif->status == 0)
+                                            <form action="{{ route('markSingleRead', ['id'=> $notif->notification_id]) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="ml-2 text-blue-500 hover:text-blue-700 text-sm">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m12.5 21l-1.4-1.4l3.55-3.55l-3.55-3.55l1.4-1.4l3.55 3.55l3.55-3.55l1.4 1.4l-3.55 3.55L21 19.6L19.6 21l-3.55-3.55zM7 21v-2h2v2zM5 5H3q0-.825.588-1.412T5 3zm2 0V3h2v2zm4 0V3h2v2zm4 0V3h2v2zm4 0V3q.825 0 1.413.588T21 5zM5 19v2q-.825 0-1.412-.587T3 19zm-2-2v-2h2v2zm0-4v-2h2v2zm0-4V7h2v2zm16 0V7h2v2z"/></svg>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="ml-2 text-gray-500 text-sm">Read</span>
+                                        @endif
+                                    </div>
                                 </div>
                             @empty
                                 <div class="text-sm text-gray-500 text-center">No new tasks.</div>
                             @endforelse
                         </div>
-                    </div>
 
+                        @if($unreadCount > 0)
+                            <form action="{{ url('/user/notifications/mark-all-read') }}" method="POST" class="p-4">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                                    Mark All as Read
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
                 <div class="flex flex-col items-center space-y-2">
                     <div class="flex items-center space-x-1">
@@ -153,11 +184,6 @@
     </div>
 
     <script>
-
-        document.getElementById('notification-button').addEventListener('click', function() {
-            const dropdown = document.getElementById('notification-dropdown');
-            dropdown.classList.toggle('hidden');
-        });
 
         function displayCurrentDate() {
             const today = new Date();
@@ -183,6 +209,10 @@
         }
         updateTime();
         setInterval(updateTime, 60000);
+
+        function toggleDropdown() {
+        document.getElementById('notification-dropdown').classList.toggle('hidden');
+        }
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>

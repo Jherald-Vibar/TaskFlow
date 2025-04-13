@@ -27,7 +27,7 @@
             <div class="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800 text-center">
                 <i class="fa-solid fa-circle-exclamation text-gray-400 dark:text-gray-500 text-4xl mb-3"></i>
                 <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-400">Missing Tasks</h3>
-                <span class="text-3xl font-bold text-gray-900 dark:text-white">{{$missingTasks}}</span>
+                <span class="text-3xl font-bold text-gray-900 dark:text-white">{{$missingTask}}</span>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">in month</p>
             </div>
         </div>
@@ -85,7 +85,6 @@
                     Add Password
                 </button>
                 @endif
-                <!-- Delete Account Button (Now Below Edit Button) -->
                 <form action="{{ route('deleteAccount', ['id' => $user->id]) }}" method="POST" id="delete-form-{{ $user->id }}">
                     @csrf
                     @method('DELETE')
@@ -131,7 +130,6 @@
                             <label class="block text-sm font-medium text-gray-700">Profile Image</label>
                             <div class="flex flex-col items-center">
                                 @if(!empty($account->image))
-                                    <!-- Display the profile image if available from the user's account -->
                                     <img id="imagePreview" class="h-20 w-20 rounded-full border"
                                          src="{{ asset('profile-pic/' . $account->image) }}"
                                          alt="Profile Image">
