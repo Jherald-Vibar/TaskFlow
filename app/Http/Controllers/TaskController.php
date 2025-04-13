@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Notification;
 use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\TaskProgress;
@@ -52,7 +53,17 @@ class TaskController extends Controller
             'status'              => 'Pending',
         ]);
 
-        Mail::send('emails.task-email', ['task' => $task, 'user' => $user], function ($message) use ($user) {
+        $messages = "New Task Created: ";
+
+        Notification::create([
+            'user_id' => $user->id,
+            'task_id' => $task->id,
+            'messages' => $messages . $task->task_name,
+        ]);
+
+        $notif = Notification::where('user_id', $user->id)->whereHas('task')->where('task_id', $task->id)->get();
+
+        Mail::send('emails.task-email', ['notif' => $notif, 'user' => $user], function ($message) use ($user) {
         $message->to($user->email)
             ->subject('📝 New Task Created');
         });
@@ -108,6 +119,7 @@ class TaskController extends Controller
     }
 
     public function deleteTask($id) {
+        $user = Auth::user();
         $task = TaskModel::find($id);
 
         if(!$task) {
@@ -115,6 +127,7 @@ class TaskController extends Controller
         }
 
         $task->delete();
+
         return redirect()->route('user-task')->with('success', "Deleted Task Successful!");
     }
 
@@ -140,7 +153,11 @@ class TaskController extends Controller
         $account = Account::where('user_id', $user->id)->first();
         $tasks = TaskModel::where('user_id', $user->id)->whereHas('progress')->get();
 
-        return view('Users.category',compact('user', 'account', 'title', 'categories', 'tasks'));
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+        return view('Users.category',compact('user', 'account', 'title', 'categories', 'tasks', 'notifications', 'unreadCount'));
     }
 
     public function categoryStore(Request $request) {
@@ -238,6 +255,10 @@ class TaskController extends Controller
         ->where('user_id', $user->id)
         ->get();
 
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
         $selectedDate = $request->query('date', now()->toDateString());
         $startOfWeek = $today->copy()->startOfWeek();
         $weekDates = collect(range(0, 6))->mapWithKeys(fn ($i) => [
@@ -247,7 +268,7 @@ class TaskController extends Controller
 
         $tasks = TaskModel::where('user_id', $user->id)->whereDate('due_date', $selectedDate)->paginate(5);
 
-        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories', 'missingTasks'));
+        return view('Users.upcoming', compact('title', 'user', 'account', 'tasks', 'weekDates', 'categories', 'missingTasks', 'notifications', 'unreadCount'));
     }
 
     public function todayPage() {
@@ -265,6 +286,30 @@ class TaskController extends Controller
             $query->whereIn('status', ['Pending', 'Ongoing']);
         })->where('user_id', $user->id)->get();
 
-        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks', 'tasks'));
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks', 'tasks', 'notifications', 'unreadCount'));
     }
+
+    public function markAsRead()
+    {
+        $userId = Auth::user()->id;
+        Notification::where('status', 0)->where('user_id', $userId)->update(['status' => 1]);
+
+        return redirect()->route('user-task')->with('message', 'All notifications marked as read');
+    }
+
+    public function markSingleRead($id) {
+        $notification = Notification::where('notification_id', $id)
+            ->where('user_id', Auth::id())
+            ->where('status', 0)
+            ->firstOrFail();
+
+        $notification->update(['status' => 1]);
+
+        return redirect()->route('user-task')->with('success', 'Notification Read');
+    }
+
 }
