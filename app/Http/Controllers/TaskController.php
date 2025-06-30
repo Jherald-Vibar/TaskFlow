@@ -8,11 +8,22 @@ use App\Models\TaskCategoryModel;
 use App\Models\TaskModel;
 use App\Models\TaskProgress;
 use App\Rules\TimeFormat;
+<<<<<<< HEAD
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+=======
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use Spatie\Activitylog\Models\Activity;
+>>>>>>> b0762e7 (Updated)
 
 class TaskController extends Controller
 {
@@ -142,8 +153,16 @@ class TaskController extends Controller
         ->where('user_id', $user->id)
         ->paginate(5);
 
+<<<<<<< HEAD
 
         return view('Users.task', compact('tasks', 'account', 'title', 'categories'));
+=======
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+        return view('Users.task', compact('tasks', 'account', 'title', 'categories', 'notifications', 'unreadCount'));
+>>>>>>> b0762e7 (Updated)
     }
 
     public function categoryView() {
@@ -160,11 +179,55 @@ class TaskController extends Controller
         return view('Users.category',compact('user', 'account', 'title', 'categories', 'tasks', 'notifications', 'unreadCount'));
     }
 
+<<<<<<< HEAD
+=======
+    public function singleCategoryView($id) {
+        $title = "Category Details";
+        $user = Auth::user();
+
+        $category = TaskCategoryModel::where('id', $id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $account = Account::where('user_id', $user->id)->first();
+
+        $tasks = TaskModel::where('user_id', $user->id)
+            ->where('category_id', $id)
+            ->whereHas('progress')
+            ->get();
+
+        $notifications = Notification::where('user_id', $user->id)
+            ->where('status', 0)
+            ->whereHas('task')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)
+            ->where('status', 0)
+            ->whereHas('task')
+            ->count();
+
+        return view('Users.single_category', compact(
+            'user',
+            'account',
+            'title',
+            'category',
+            'tasks',
+            'notifications',
+            'unreadCount'
+        ));
+    }
+
+>>>>>>> b0762e7 (Updated)
     public function categoryStore(Request $request) {
         $user = Auth::user();
 
         $validated = $request->validate([
+<<<<<<< HEAD
             'categoryName' => 'required|unique:task_categories,category_name',
+=======
+            'categoryName' => 'required|unique:task_categories,category_name,NULL,id,user_id,'.$user->id,
+>>>>>>> b0762e7 (Updated)
         ]);
 
         $taskCategory = TaskCategoryModel::create([
@@ -172,7 +235,17 @@ class TaskController extends Controller
             'user_id' => $user->id,
         ]);
 
+<<<<<<< HEAD
         return redirect()->back()->with('success', "Category Added Successfully!");
+=======
+        if (!$taskCategory) {
+            return redirect()->back()->with('error', "Failed to create category");
+        }
+
+        $categories = TaskCategoryModel::where('user_id', $user->id)->get();
+
+        return redirect()->back()->with('success', "Category Added Successfully!")->with('categories', $categories);
+>>>>>>> b0762e7 (Updated)
     }
 
     public function filterTask(Request $request) {
@@ -197,11 +270,23 @@ class TaskController extends Controller
             })->where('user_id', $user->id)->paginate(5);
         }
          else {
+<<<<<<< HEAD
             $title = "My Task";
             $tasks = TaskModel::where('user_id', $user->id)->paginate(5);
         }
 
         return view('Users.task', compact('title', 'account', 'categories', 'tasks'));
+=======
+            $title = "Task List";
+            $tasks = TaskModel::where('user_id', $user->id)->paginate(5);
+        }
+
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+        return view('Users.task', compact('title', 'account', 'categories', 'tasks', 'notifications', 'unreadCount'));
+>>>>>>> b0762e7 (Updated)
     }
 
     public function updateProgress(Request $request, $id) {
@@ -233,6 +318,38 @@ class TaskController extends Controller
         return redirect()->route('user-task')->with('success', 'Task Progress Updated!');
     }
 
+<<<<<<< HEAD
+=======
+     public function reorderTasks(Request $request)
+    {
+        $taskId = $request->input('draggedId');
+        $status = $request->input('newStatus');
+
+        if ($status == "Pending") {
+            $progress = 0;
+        } elseif ($status == "Ongoing") {
+            $progress = 50;
+        } elseif ($status == "Completed") {
+            $progress = 100;
+        } else {
+            return response()->json(['error' => 'Invalid status'], 400);
+        }
+
+        $task = TaskProgress::where('task_id', $taskId)->latest()->first();
+        if ($task) {
+            $task->progress_percentage = $progress;
+            $task->save();
+        }
+
+       return response()->json([
+            'success' => true,
+            'progress_percentage' => $progress,
+            'status' => $status,
+        ]);
+        }
+
+
+>>>>>>> b0762e7 (Updated)
     public function upcomingTaskPage(Request $request)
     {
         $title = "Upcoming Task";
@@ -272,7 +389,11 @@ class TaskController extends Controller
     }
 
     public function todayPage() {
+<<<<<<< HEAD
         $title = "Today Task";
+=======
+        $title = "Daily Tasks";
+>>>>>>> b0762e7 (Updated)
         $user = Auth::user();
         $account = Account::where('user_id', $user->id)->first();
         $tasks = TaskModel::where('user_id', $user->id)->where('due_date', '=', Carbon::today())->with('progress')->get();
@@ -290,7 +411,20 @@ class TaskController extends Controller
 
         $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
 
+<<<<<<< HEAD
         return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks', 'tasks', 'notifications', 'unreadCount'));
+=======
+        $response = Http::get('https://zenquotes.io/api/today');
+
+        if ($response->successful()) {
+            $quote = $response->json()[0];
+
+            $quoteText =  $quote['q'];
+            $author = $quote['a'];
+        }
+
+        return view('Users.today', compact('title', 'user', 'account', 'groupedTasks', 'missingTasks', 'tasks', 'notifications', 'unreadCount', 'quoteText', 'author'));
+>>>>>>> b0762e7 (Updated)
     }
 
     public function markAsRead()
@@ -312,4 +446,142 @@ class TaskController extends Controller
         return redirect()->route('user-task')->with('success', 'Notification Read');
     }
 
+<<<<<<< HEAD
+=======
+    public function insightIndex() {
+    $user = Auth::user();
+    $title = "Task Insight";
+
+    $account = Account::where('user_id', $user->id)->first();
+
+    $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+    $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+
+    $totalTasks = TaskModel::where('user_id', $user->id)->count();
+    $completedTasks = TaskModel::where('user_id', $user->id)
+        ->whereNotNull('completed_at')->count();
+
+    $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 2) : 0;
+
+    $mostProductiveHour = TaskModel::where('user_id', $user->id)
+        ->whereNotNull('completed_at')
+        ->get()
+        ->groupBy(fn($task) => Carbon::parse($task->completed_at)->format('H'))
+        ->map->count()
+        ->sortDesc()
+        ->keys()
+        ->first();
+
+    $overdueTasks = TaskModel::where('user_id', $user->id)
+        ->whereDate('due_date', '<', now())
+        ->whereDoesntHave('progress', fn($q) => $q->where('status', 'Completed'))
+        ->count();
+
+    $days = TaskModel::where('user_id', $user->id)
+        ->whereNotNull('completed_at')
+        ->orderBy('completed_at', 'desc')
+        ->pluck('completed_at')
+        ->map(fn($date) => Carbon::parse($date)->toDateString())
+        ->unique()
+        ->values();
+
+    $streak = 0;
+    foreach ($days as $i => $day) {
+        if ($day == now()->subDays($i)->toDateString()) {
+            $streak++;
+        } else {
+            break;
+        }
+    }
+
+    return view('Users.insight', compact(
+        'completionRate',
+        'mostProductiveHour',
+        'overdueTasks',
+        'streak',
+        'title',
+        'unreadCount',
+        'notifications',
+        'account'
+    ));
+    }
+
+    public function downloadPdf() {
+
+        $user = Auth::user();
+    $title = "Task Insight";
+
+    $account = Account::where('user_id', $user->id)->first();
+
+    $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+    $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+
+    $totalTasks = TaskModel::where('user_id', $user->id)->count();
+    $completedTasks = TaskModel::where('user_id', $user->id)
+        ->whereNotNull('completed_at')->count();
+
+    $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 2) : 0;
+
+    $mostProductiveHour = TaskModel::where('user_id', $user->id)
+        ->whereNotNull('completed_at')
+        ->get()
+        ->groupBy(fn($task) => Carbon::parse($task->completed_at)->format('H'))
+        ->map->count()
+        ->sortDesc()
+        ->keys()
+        ->first();
+
+    $overdueTasks = TaskModel::where('user_id', $user->id)
+        ->whereDate('due_date', '<', now())
+        ->whereDoesntHave('progress', fn($q) => $q->where('status', 'Completed'))
+        ->count();
+
+    $days = TaskModel::where('user_id', $user->id)
+        ->whereNotNull('completed_at')
+        ->orderBy('completed_at', 'desc')
+        ->pluck('completed_at')
+        ->map(fn($date) => Carbon::parse($date)->toDateString())
+        ->unique()
+        ->values();
+
+    $streak = 0;
+    foreach ($days as $i => $day) {
+        if ($day == now()->subDays($i)->toDateString()) {
+            $streak++;
+        } else {
+            break;
+        }
+    }
+
+        $data = [
+        'completionRate' => $completionRate,
+        'mostProductiveHour' => $mostProductiveHour,
+        'overdueTasks' => $overdueTasks,
+        'streak' => $streak,
+        ];
+
+
+    $pdf = PDF::loadView('users.insight_pdf', $data);
+
+    return $pdf->download('productivity-insights-report.pdf');
+    }
+
+    public function showActivityLog() {
+        $user = Auth::user();
+        $account = Account::where('user_id', $user->id)->first();
+        $title = "Activity Log";
+
+        $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
+
+        $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
+
+        $activities = Activity::where('causer_id', $user->id)->latest()->get();
+        return view('users.activity_log', compact('activities', 'account', 'title', 'unreadCount', 'notifications', 'user'));
+    }
+
+>>>>>>> b0762e7 (Updated)
 }
