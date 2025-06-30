@@ -4,16 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-<<<<<<< HEAD
-
-class TaskModel extends Model
-{
-    use HasFactory;
-
-    protected $table = 'tasks';
-
-    protected $fillable = ['user_id', 'task_name', 'description', 'category_id', 'priority', 'due_date', 'due_time'];
-=======
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -24,7 +14,6 @@ class TaskModel extends Model
     protected $table = 'tasks';
 
     protected $fillable = ['user_id', 'task_name', 'description', 'category_id', 'priority', 'due_date', 'due_time', 'completed_at'];
->>>>>>> b0762e7 (Updated)
 
     public function user()
     {
@@ -47,26 +36,17 @@ class TaskModel extends Model
     {
         $progress = $this->progress;
         $status = 'Pending';
-<<<<<<< HEAD
-=======
         $completedAt = null;
->>>>>>> b0762e7 (Updated)
 
         if ($progress) {
             if ($progress->progress_percentage == 100) {
                 $status = 'Completed';
-<<<<<<< HEAD
-=======
                 $completedAt = now();
->>>>>>> b0762e7 (Updated)
             } elseif ($progress->progress_percentage > 0) {
                 $status = 'Ongoing';
             }
         }
 
-<<<<<<< HEAD
-        $this->update(['status' => $status]);
-=======
         $previousStatus = $this->getOriginal('status');
 
         $this->update(['status' => $status, 'completed_at' => $completedAt]);
@@ -100,7 +80,6 @@ class TaskModel extends Model
             ->useLogName('task')
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Task has been {$eventName}");
->>>>>>> b0762e7 (Updated)
     }
 }
 

@@ -18,34 +18,22 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     public function taskPage(Request $request) {
-<<<<<<< HEAD
-        $title = "My Task";
-=======
         $title = "Task List";
->>>>>>> b0762e7 (Updated)
         $user = Auth::user();
         $categories = TaskCategoryModel::where('user_id', $user->id)->get();
         $account = Account::where('user_id', $user->id)->first();
 
         if (!$account) {
-<<<<<<< HEAD
-            return redirect()->route('createForm', ['id' => $user->id])
-                             ->with('error', 'You need to Create an Account!');
-=======
             $account = Account::create([
                 'username' => $user->name,
                 'user_id' => $user->id,
             ]);
->>>>>>> b0762e7 (Updated)
         }
 
         $sort = $request->input('sort', 'oldest');
         $filterDate = $request->input('filter_date');
         $priority = $request->input('priority');
-<<<<<<< HEAD
-=======
         $status = $request->input('status');
->>>>>>> b0762e7 (Updated)
 
         $taskQuery = TaskModel::with('progress')->where('user_id', $user->id);
 
@@ -56,15 +44,12 @@ class UserController extends Controller
         if ($priority) {
             $taskQuery->where('priority', $priority);
         }
-<<<<<<< HEAD
-=======
         
         if ($status) {
             $taskQuery->whereHas('progress', function($query) use ($status) {
                 $query->where('status', ucfirst($status)); // Convert to title case (completed -> Completed)
             });
         }
->>>>>>> b0762e7 (Updated)
 
         $tasks = $taskQuery->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(5)
@@ -72,21 +57,14 @@ class UserController extends Controller
                 'sort' => $sort,
                 'filter_date' => $filterDate,
                 'priority' => $priority,
-<<<<<<< HEAD
-=======
                 'status' => $status,
->>>>>>> b0762e7 (Updated)
             ]);
 
         $notifications = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->orderBy('created_at', 'desc')->get();
 
         $unreadCount = Notification::where('user_id', $user->id)->where('status', 0)->whereHas('task')->count();
 
-<<<<<<< HEAD
-        return view('Users.task', compact('account', 'tasks','user','title', 'categories','sort','filterDate','priority' ,'notifications', 'unreadCount'));
-=======
         return view('Users.task', compact('account', 'tasks','user','title', 'categories','sort','filterDate','priority', 'status', 'notifications', 'unreadCount'));
->>>>>>> b0762e7 (Updated)
     }
 
     public function createForm($id) {

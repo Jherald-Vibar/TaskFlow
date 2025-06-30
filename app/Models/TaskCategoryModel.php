@@ -2,18 +2,6 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
-use Illuminate\Console\View\Components\Task;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class TaskCategoryModel extends Model
-{
-    use HasFactory;
-    protected $table = 'task_categories';
-
-    protected $fillable = ['user_id', 'category_name',];
-=======
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -36,7 +24,6 @@ class TaskCategoryModel extends Model
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Task category has been {$eventName}");
     }
->>>>>>> b0762e7 (Updated)
 
     public function user()
     {

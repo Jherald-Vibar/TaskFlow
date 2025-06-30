@@ -20,10 +20,7 @@ return new class extends Migration
             $table->enum('priority', ['Low', 'Medium', 'High']);
             $table->date('due_date');
             $table->time('due_time')->default('23:59:00');
-<<<<<<< HEAD
-=======
             $table->timestamp('completed_at')->nullable();
->>>>>>> b0762e7 (Updated)
             $table->timestamps();
         });
     }

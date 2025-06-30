@@ -27,11 +27,7 @@ Route::get('auth/google', [AuthController::class, 'redirect'])->name('google-aut
 Route::get('/auth/google/callback', [AuthController::class,'googleAuth'])->name('googleAuthenticated');
 Route::get('login', [AuthController::class, 'login'])->name('loginForm');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
-<<<<<<< HEAD
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-=======
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
->>>>>>> b0762e7 (Updated)
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgotpassForm');
 Route::post('/forgot-password', [AuthController::class, 'forgotPasswordPost'])->name('resetPass');
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('reset');
@@ -54,16 +50,11 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::get('filter-task', [TaskController::class, 'filterTask'])->name('filterTask');
     Route::get('/upcoming-task', [TaskController::class, 'upcomingTaskPage'])->name('upcomingTask');
     Route::get('/today-task', [TaskController::class, 'todayPage'])->name('today');
-<<<<<<< HEAD
-
-    //Account Management
-=======
     Route::post('/tasks/reorder', [TaskController::class, 'reorderTasks'])->name('task-reorder');
     Route::get('tasks/insight', [TaskController::class, 'insightIndex'])->name('task-insight');
 
     //Account Management
 
->>>>>>> b0762e7 (Updated)
     Route::get('create-account/{id}', [UserController::class, 'createForm'])->name('createForm');
     Route::post('create-account/{id}', [UserController::class, 'storeAccount'])->name('storeAccount');
     Route::get('account/settings', [UserController::class, 'viewAccount'])->name('accountSettings');
@@ -72,10 +63,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
     Route::post('account/settings/add-pass/{id}', [UserController::class, 'addPassword'])->name('addPassword');
     Route::delete('user/{id}', [UserController::class, 'deleteAccount'])->name('deleteAccount');
     Route::get('task/category', [TaskController::class, 'categoryView'])->name('categoryView');
-<<<<<<< HEAD
-    Route::post('task/category', [TaskController::class, 'categoryStore'])->name('categoryStore');
-
-=======
     Route::get('task/category/{id}', [TaskController::class, 'singleCategoryView'])->name('singleCategoryView');
     Route::post('task/category', [TaskController::class, 'categoryStore'])->name('categoryStore');
 
@@ -86,7 +73,6 @@ Route::group(['middleware' => 'auth', 'prefix' => 'user'], function () {
 
 
 
->>>>>>> b0762e7 (Updated)
     //Notification Mark As Read
     Route::patch('/notifications/mark-all-read', [TaskController::class, 'markAsRead']);
     Route::patch('/notification/{id}/mark-read', [TaskController::class, 'markSingleRead'])->name('markSingleRead');

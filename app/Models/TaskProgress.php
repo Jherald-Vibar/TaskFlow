@@ -20,13 +20,10 @@ class TaskProgress extends Model
         static::saving(function ($progress) {
             $progress->status = $progress->determineStatus();
         });
-<<<<<<< HEAD
-=======
 
        static::saved(function ($progress) {
          $progress->task->updateStatus();
         });
->>>>>>> b0762e7 (Updated)
     }
 
     public function determineStatus()
