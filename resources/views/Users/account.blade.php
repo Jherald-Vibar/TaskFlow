@@ -16,24 +16,24 @@
                 <li aria-current="page" class="text-primary-600 dark:text-white">Account</li>
             </ol>
         </nav>
-        
+
         <!-- Profile Header -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8">
             <div class="bg-gradient-to-r from-primary-600 to-secondary-600 h-32 w-full"></div>
             <div class="flex flex-col sm:flex-row items-center px-6 -mt-16 pb-6">
                 <div class="relative">
                     @if(!empty($account->image))
-                    <img id="profileImage" class="h-24 w-24 rounded-full border-4 border-white cursor-pointer object-cover" 
+                    <img id="profileImage" class="h-24 w-24 rounded-full border-4 border-white cursor-pointer object-cover"
                          src="{{asset('profile-pic/'. $account->image)}}" alt="{{$account->username}} avatar" />
                     @else
-                    <img id="profileImage" class="h-24 w-24 rounded-full border-4 border-white cursor-pointer object-cover" 
+                    <img id="profileImage" class="h-24 w-24 rounded-full border-4 border-white cursor-pointer object-cover"
                          src="{{asset(Auth::user()->image)}}" alt="{{$account->username}} avatar" />
                     @endif
                     <div class="absolute bottom-0 right-0 h-5 w-5 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div class="mt-6 sm:mt-0 sm:ml-6 text-center sm:text-left">
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{$account->username}}</h1>
-                    <p class="text-gray-600 dark:text-gray-400">{{Auth::user()->email}}</p>
+                    <p class="text-white dark:text-gray-400">{{Auth::user()->email}}</p>
                     <span class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300">
                         User
                     </span>
@@ -47,7 +47,7 @@
             </svg>
             Activity Overview
         </h2>
-        
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-10">
             <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow dark:bg-gray-800 border-t-4 border-primary-500">
@@ -64,7 +64,7 @@
                     <span class="ml-2 text-sm text-gray-500 dark:text-gray-400 pb-1">this month</span>
                 </div>
             </div>
-            
+
             <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow dark:bg-gray-800 border-t-4 border-green-500">
                 <div class="flex items-center mb-4">
                     <div class="p-3 rounded-lg bg-green-100 dark:bg-green-900/50">
@@ -79,7 +79,7 @@
                     <span class="ml-2 text-sm text-gray-500 dark:text-gray-400 pb-1">this month</span>
                 </div>
             </div>
-            
+
             <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow dark:bg-gray-800 border-t-4 border-red-500">
                 <div class="flex items-center mb-4">
                     <div class="p-3 rounded-lg bg-red-100 dark:bg-red-900/50">
@@ -103,7 +103,7 @@
             </svg>
             Account Management
         </h2>
-        
+
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -125,7 +125,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Account Actions -->
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Account Actions</h3>
@@ -154,7 +154,7 @@
                                 Add Password
                             </button>
                             @endif
-                            
+
                             <form action="{{ route('deleteAccount', ['id' => $user->id]) }}" method="POST" id="delete-form-{{ $user->id }}">
                                 @csrf
                                 @method('DELETE')
@@ -172,7 +172,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Image Modal -->
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden justify-center items-center z-50 backdrop-blur-sm transition-opacity">
         <div class="relative w-full max-w-4xl mx-auto p-4">
@@ -218,10 +218,10 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
-                    <input type="text" id="editUserName" name="username" value="{{$account->username}}" 
+                    <input type="text" id="editUserName" name="username" value="{{$account->username}}"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
-                
+
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600" onclick="closeEditModal()">
                         Cancel
@@ -245,22 +245,22 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
-                    <input type="password" id="currentPassword" name="password" 
+                    <input type="password" id="currentPassword" name="password"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">New Password</label>
-                    <input type="password" id="newPassword" name="new_password" 
+                    <input type="password" id="newPassword" name="new_password"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="new_password_confirmation" 
+                    <input type="password" id="confirmPassword" name="new_password_confirmation"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
-                
+
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600" onclick="closeEditPassModal()">
                         Cancel
@@ -283,16 +283,16 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">New Password</label>
-                    <input type="password" id="addNewPassword" name="new_password" 
+                    <input type="password" id="addNewPassword" name="new_password"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm Password</label>
-                    <input type="password" id="addConfirmPassword" name="new_password_confirmation" 
+                    <input type="password" id="addConfirmPassword" name="new_password_confirmation"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
-                
+
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600" onclick="closeAddPassModal()">
                         Cancel
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const profileImage = document.getElementById("profileImage");
     const imageModal = document.getElementById("imageModal");
     const modalImage = document.getElementById("modalImage");
-    
+
     if (profileImage) {
         profileImage.addEventListener("click", function() {
             modalImage.src = this.src;
@@ -327,11 +327,11 @@ document.addEventListener("DOMContentLoaded", function() {
         imageModal.classList.remove("flex");
         imageModal.classList.add("hidden");
     }
-    
+
     // Image preview on file selection
     const profileImageInput = document.getElementById("profileImageInput");
     const imagePreview = document.getElementById("imagePreview");
-    
+
     if (profileImageInput && imagePreview) {
         profileImageInput.addEventListener("change", function(event) {
             const file = event.target.files[0];

@@ -71,7 +71,7 @@ class TaskController extends Controller
             ->subject('📝 New Task Created');
         });
 
-        return redirect()->route('user-task')->with('success', 'Task Created Successfully!');
+        return redirect()->back()->with('success', 'Task Created Successfully!');
     }
 
     public function updateTask(Request $request, $id) {

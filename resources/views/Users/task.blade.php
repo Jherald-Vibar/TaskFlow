@@ -125,10 +125,9 @@
                                     </div>
 
                                     <div class="mt-3 flex justify-between text-xs text-gray-600 relative">
-                                        <!-- View button stays visible -->
                                         <button
                                             class="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center"
-                                            onclick="openViewModal({{ $task->id }}, '{{ $task->task_name }}', '{{ $task->description }}', '{{ $task->due_date }}', '{{ $task->due_time }}', '{{ $task->priority }}', '{{ $task->category_id ?? '' }}', '{{ $task->progress->progress_percentage ?? 0 }}', '{{ $task->progress->status }}')">
+                                            onclick="openViewModal({{ $task->id }}, '{{ addslashes($task->task_name) }}', '{{ addslashes($task->description) }}', '{{ $task->due_date }}', '{{ $task->due_time }}', '{{ $task->priority }}', '{{ $task->category_id ?? '' }}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -136,7 +135,6 @@
                                             View
                                         </button>
 
-                                        <!-- Dropdown Trigger -->
                                         <div class="relative">
                                             <button onclick="toggleDropdowns(this)" class="hover:text-indigo-600 focus:outline-none">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +171,6 @@
         </div>
 </div>
 
- <!--Add New TaskFlow Task-->
 <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out backdrop-blur-sm">
     <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
         <div class="flex justify-between items-center mb-6">
@@ -280,7 +277,6 @@
     </div>
 </div>
 
-<!--Edit TaskFlow Task-->
 <div id="editTaskModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out backdrop-blur-sm">
     <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
         <div class="flex justify-between items-center mb-6">
@@ -393,10 +389,8 @@
     </div>
 </div>
 
-<!--View TaskFlow Modal-->
 <div id="viewModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center transition-opacity duration-300 ease-in-out backdrop-blur-sm">
     <div class="bg-white w-full max-w-4xl mx-4 p-6 rounded-2xl shadow-2xl transform scale-100 transition-transform duration-300 ease-in-out">
-        <!-- Header -->
         <div class="flex justify-between items-center border-b pb-4 mb-6">
             <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -412,7 +406,6 @@
             </button>
         </div>
 
-        <!-- Task Details -->
         <div class="mb-8">
             <h3 id="viewTaskName" class="text-2xl font-bold text-gray-800 mb-2"></h3>
             <div class="flex flex-wrap gap-2 mb-4">
@@ -437,12 +430,10 @@
             </div>
         </div>
 
-        <!-- Progress Section -->
         <div class="bg-indigo-50 rounded-xl p-6">
             <h4 class="text-lg font-semibold text-indigo-800 mb-4">Task Progress</h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <!-- Progress Bar -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-sm font-medium text-gray-700">Completion Status</span>
@@ -453,7 +444,6 @@
                     </div>
             </div>
 
-            <!-- Circle Progress -->
                 <div class="relative w-36 h-36 mx-auto">
                     <svg class="w-full h-full" viewBox="0 0 100 100">
                         <circle class="text-gray-200 stroke-current" stroke-width="10" cx="50" cy="50" r="40" fill="none" />
@@ -467,7 +457,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-100">
             <button onclick="closeViewModal()"
                     class="px-5 py-2.5 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition font-medium shadow-sm">
@@ -514,7 +503,6 @@
         document.getElementById("taskModal").classList.add("hidden");
     }
 
-
     function openEditModal(id, taskName, description, dueDate, dueTime, priority, category_id, progress_percentage) {
         let formattedTime = dueTime ? convertTo12HourFormat(dueTime) : '00:00';
         document.getElementById('editTaskId').value = id;
@@ -541,7 +529,6 @@
     }
 
     function updateProgressValue(value) {
-        // This function is kept but won't be used for progress modal
     }
 
     function confirmButton(event, taskId) {
@@ -565,12 +552,10 @@
     }
 
     function openEditProgressModal() {
-        // This function intentionally left empty as the feature has been removed
         console.log("Progress edit feature has been removed");
     }
 
     function closeProgressModal() {
-        // This function is kept as a fallback but won't be used
     }
 
     function convertTo12HourFormat(time) {
@@ -582,14 +567,29 @@
             return `${hours12}:${minutes} ${ampm}`;
         }
 
-    function openViewModal(id, taskName, description, dueDate, dueTime, priority, category_id, progress, taskStatus) {
+    function openViewModal(id, taskName, description, dueDate, dueTime, priority, category_id) {
+        const taskCard = document.querySelector(`.task-card[data-id="${id}"]`);
+
+        let taskStatus = 'Pending';
+        let progress = 0;
+
+        if (taskCard) {
+            const liveStatusText = taskCard.querySelector('.mt-2.text-xs.font-medium.text-gray-600');
+            taskStatus = liveStatusText ? liveStatusText.textContent.trim() : 'Pending';
+
+            const liveProgressBar = taskCard.querySelector('.bg-indigo-500');
+            if (liveProgressBar) {
+                const progressText = liveProgressBar.textContent.trim().replace('%', '');
+                progress = parseInt(progressText) || 0;
+            }
+        }
+
         const dueTime12Hour = convertTo12HourFormat(dueTime);
         document.getElementById('viewTaskName').textContent = taskName;
         document.getElementById('viewTaskDescription').textContent = description || 'No description provided';
         document.getElementById('viewTaskDueDate').textContent = dueDate;
         document.getElementById('viewTaskDueTime').textContent = dueTime12Hour;
 
-        // Update status with appropriate styling
         const statusElem = document.getElementById('viewTaskStatus');
         statusElem.textContent = taskStatus;
 
@@ -603,12 +603,10 @@
 
         document.getElementById('viewTaskProgressText').textContent = `${progress}%`;
 
-        // Update progress bar
         const clampedProgress = Math.min(Math.max(progress, 0), 100);
         document.getElementById('progressBar').style.width = `${clampedProgress}%`;
         document.getElementById('progressValue').textContent = `${clampedProgress}%`;
 
-        // Update SVG circle progress
         const circle = document.getElementById('progressCircleSVG');
         const radius = 40;
         const circumference = radius * 2 * Math.PI;
@@ -663,6 +661,10 @@
                         const statusText = draggedElem.querySelector('.mt-2.text-xs.font-medium.text-gray-600');
                         if (statusText) {
                             statusText.textContent = data.status;
+                        }
+                        const viewTaskStatus = draggedElem.querySelector('#viewTaskStatus');
+                        if (viewTaskStatus) {
+                            viewTaskStatus.textContent = data.status;
                         }
                     } else {
                         alert('Failed to update task on server');
