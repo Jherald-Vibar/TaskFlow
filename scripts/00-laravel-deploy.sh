@@ -9,6 +9,9 @@ npm install
 echo "Building assets..."
 npm run build
 
+echo "Creating SQLite database..."
+touch /var/www/html/database/database.sqlite
+
 echo "Caching config..."
 php artisan config:cache
 
@@ -17,3 +20,6 @@ php artisan route:cache
 
 echo "Linking storage..."
 php artisan storage:link
+
+echo "Running migrations..."
+php artisan migrate --force
