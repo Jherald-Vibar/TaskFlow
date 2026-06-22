@@ -1,4 +1,4 @@
-@extends('Layouts.app')
+@extends('layouts.app')
 @section('content')
 <section class="bg-gradient-to-br from-gray-50 to-gray-100 py-8 min-h-screen dark:bg-gray-900">
     <div class="mx-auto max-w-screen-lg px-4">
